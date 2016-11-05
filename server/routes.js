@@ -6,8 +6,15 @@ var tesseract = require('node-tesseract');
 var multer  = require('multer');
 var fs = require('fs');
 
+var upload = multer(
+        {
+            dest: './.tmp/',
+            inMemory: false
+        }
+    );
 
 module.exports = function(app) {
+
     app.use(multer(
         {
             dest: './.tmp/',
@@ -15,7 +22,7 @@ module.exports = function(app) {
         }
     ));
 
-    app.post("/api/ocr", process);
+    app.post("/api/ocr",  process);
 
 };
 
@@ -50,7 +57,7 @@ var process = function(req, res) {
                 }
                 console.log('successfully deleted %s', path);
             });
-
+            console.log('result (text) %s', text);
             res.json(200, text);
         }
     });

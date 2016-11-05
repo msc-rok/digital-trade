@@ -1,7 +1,7 @@
 /**
  * Created by Minhaj on 6/20/15.
  */
-angular.module('mulkiyaOCR',
+angular.module('digital-trade',
     [
         'ui.router',
         'ngFileUpload',
@@ -9,7 +9,7 @@ angular.module('mulkiyaOCR',
     ]
 );
 
-angular.module('mulkiyaOCR').config(function($stateProvider, $urlRouterProvider, $locationProvider,  $mdGestureProvider) {
+angular.module('digital-trade').config(function($stateProvider, $urlRouterProvider, $locationProvider,  $mdGestureProvider) {
 
     $mdGestureProvider.skipClickHijack();
 
@@ -26,7 +26,7 @@ angular.module('mulkiyaOCR').config(function($stateProvider, $urlRouterProvider,
 }).controller('ApplicationController', function ($scope, Upload, $mdDialog) {
     $scope.progress = false;
 
-    $scope.uploadMulkiya = function(event){
+    $scope.uploadPicture = function(event){
         $scope.progress = true;
         $scope.upload($scope.files, event);
     };
@@ -51,10 +51,9 @@ angular.module('mulkiyaOCR').config(function($stateProvider, $urlRouterProvider,
                     $mdDialog.show(
                         $mdDialog.alert()
                             .parent(angular.element(document.body))
-                            .title('Text Scanned from Mulkiya')
+                            .title('Ergebnis')
                             .content(data)
-                            .ariaLabel('Alert Dialog')
-                            .ok('Got it!')
+                            .ok('Ok')
                             .targetEvent(event)
                     );
                     console.log('file ' + config.file.name + 'uploaded. Response: ' + data);
@@ -65,7 +64,7 @@ angular.module('mulkiyaOCR').config(function($stateProvider, $urlRouterProvider,
 
 });
 
-angular.module('mulkiyaOCR').run(function($rootScope) {
+angular.module('digital-trade').run(function($rootScope) {
     $rootScope.safeApply = function(fn) {
         var phase = $rootScope.$$phase;
         if (phase === '$apply' || phase === '$digest') {
