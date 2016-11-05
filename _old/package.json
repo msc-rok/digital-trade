@@ -1,0 +1,15 @@
+{
+  "name": "digital-trade",
+  "version": "1.0.0",
+  "description": "Digital Trade Application",
+  "engines": {
+    "node": "7.0.0"
+  },
+  "main": "build/index.js",
+  "scripts": {
+    "test": "grunt test",
+    "start": "node build/index.js"
+  },
+  "author": "",
+  "license": "ISC"
+}
