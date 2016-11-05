@@ -19,6 +19,11 @@ module.exports = function(app) {
 
 };
 
+var options = {
+    l: 'deu',
+    psm: 6
+};
+
 /**
  * Following steps done under this functions.
  *
@@ -35,7 +40,7 @@ var process = function(req, res) {
     var path = req.files.file.path;
 
     // Recognize text of any language in any format
-    tesseract.process(path,function(err, text) {
+    tesseract.process(path, options, function(err, text) {
         if(err) {
             console.error(err);
         } else {
