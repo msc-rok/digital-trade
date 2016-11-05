@@ -4,7 +4,7 @@ var fs = require('fs');
 
 module.exports = function (request, response) {
 
-var file_path = './assets/8.JPG';
+var file_path = './assets/10.JPG';
 
 if (! (process.env.OCRESTFUL_BASE_URL && process.env.OCRESTFUL_API_SECRET)) {
   console.log("ERROR: you must import the OCRestful environment variables OCRESTFUL_BASE_URL and OCRESTFUL_API_SECRET");
@@ -23,7 +23,7 @@ if (! (process.env.OCRESTFUL_BASE_URL && process.env.OCRESTFUL_API_SECRET)) {
             if (!getErr) {
               var results = recurse_through_results(JSON.parse(getBody));
               console.log(JSON.stringify(results));
-              response.send(results);
+              response.send(JSON.parse(getBody));
             }
           });
         }, postBody_parsed.eta);
