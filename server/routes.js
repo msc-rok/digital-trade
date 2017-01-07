@@ -74,6 +74,7 @@ var process = function(req, res) {
 
             console.log('result (text) %s', text);
             res.json(200, text);
+                };
         };
     });
 
