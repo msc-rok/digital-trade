@@ -18,3 +18,5 @@ OCR.prototype.saveResult = function (res, client, options, result) {
     //await(client.query("COMMIT"));
     //res.json({result: 'Rows received: ' + obj.length});
 };
+
+module.exports = new OCR();
