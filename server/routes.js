@@ -50,7 +50,7 @@ var process = function(req, res) {
     var path = req.files.file.path;
 
     // Recognize text of any language in any format
-    tesseract.process(path, options, function(err, text) {
+    tesseract.process(path, options, function(err, result) {
         if(err) {
             console.error(err);
         } else {
@@ -60,22 +60,22 @@ var process = function(req, res) {
                 }
                 console.log('successfully deleted %s', path);
             });
-            
-            var client;
-            try {
-                    client = await(pool.connect());
-                    await(ocr.saveResult(res, client, options, text));
-                    await(client.release());
-                } catch (error) {
-                    console.log('Error: %s', error)
-                    res.json(500, "Error while accessing db");
-                    if (client !== undefined) {
-                        await(client.release(true));
-                    }
-                    return;
-            };
-            console.log('result (text) %s', text);
-            res.json(200, text);
+            async(function (res, result) {
+                var client;
+                try {
+                        client = await(pool.connect());
+                        await(ocr.saveResult(res, client, options, result));
+                        await(client.release());
+                    } catch (error) {
+                        console.log('Error: %s', error)
+                        res.json(500, "Error while accessing db");
+                        if (client !== undefined) {
+                            await(client.release(true));
+                        }
+                };
+            })(res, result);
+            console.log('result (text) %s', result);
+            res.json(200, result);
                 
         };
     });
