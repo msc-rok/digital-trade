@@ -73,7 +73,7 @@ var process = function(req, res) {
                             await(client.release(true));
                         }
                 };
-            })(res, json.result);
+            })(res, result);
             console.log('result (text) %s', result);
             res.json(200, result);
                 
