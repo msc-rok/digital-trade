@@ -67,13 +67,13 @@ var process = function(req, res) {
                         await(ocr.saveResult(res, client, options, result));
                         await(client.release());
                     } catch (error) {
-                        console.log('Error: %s', error)
+                        console.log('%s', error)
                         res.json(500, "Error while accessing db");
                         if (client !== undefined) {
                             await(client.release(true));
                         }
                 };
-            })(res, result);
+            })(res, json.result);
             console.log('result (text) %s', result);
             res.json(200, result);
                 
