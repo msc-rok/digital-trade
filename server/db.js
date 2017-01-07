@@ -11,7 +11,7 @@ const url = require('url');
 
 
 //Configure database connection either from environment (on Heroku side) or local config
-const connection = process.env.DATABASE_URL;
+const connection = config("DATABASE_URL");
 types.setTypeParser(1700, function(val) {
     return +val;
 });

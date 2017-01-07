@@ -1,8 +1,7 @@
 "use strict";
 
 
-
-const constants = require('../libs/constants');
+const constants = require('../server/constants');
 const Ajv = require('ajv');
 const ajv = new Ajv({allErrors: true}); // options can be passed, e.g. {allErrors: true}
 

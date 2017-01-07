@@ -1,0 +1,8 @@
+{ 
+    "DATABASE_URL": "postgres://etrvzfiikfbpeh:hwzTPdRgRO16P101FVeCMttrmJ@ec2-54-75-230-137.eu-west-1.compute.amazonaws.com:5432/dbeqkaei8gtemv",
+    "DATABASE_SCHEMA": "ocr",
+    "OCRESTFUL_API_SECRET": "IjFLiDu6vA2ebnL3AMXud",
+    "OCRESTFUL_BASE_URL": "https://api.ocrestful.com/uxu2g/",
+    "OCR_OPTIONS_lang":"deu",
+    "OCR_OPTIONS_psm": "6"
+}

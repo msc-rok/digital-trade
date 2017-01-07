@@ -30,8 +30,8 @@ module.exports = function(app) {
 };
 
 var options = {
-    l: process.env.OCR_OPTIONS_lang || 'deu',
-    psm:  process.env.OCR_OPTIONS_psm || 6
+    l: config("OCR_OPTIONS_lang") || 'deu',
+    psm:  config("OCR_OPTIONS_psm") || 6
 };
 
 /**
