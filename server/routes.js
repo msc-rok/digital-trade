@@ -3,8 +3,8 @@ var tesseract = require('node-tesseract');
 var multer  = require('multer');
 var fs = require('fs');
 
-const ASYNC = require('asyncawait/async');
-const AWAIT = require('asyncawait/await');
+const async = require('asyncawait/async');
+const await = require('asyncawait/await');
 
 const pool = require('../server/db');
 const ocr = require('../server/ocr');
@@ -63,13 +63,13 @@ var process = function(req, res) {
             
             var client;
             try {
-                    client = myawait(pool.connect());
-                    myawait(ocr.saveResult(res, client, options, text));
-                    myawait(client.release());
+                    client = await(pool.connect());
+                    await(ocr.saveResult(res, client, options, text));
+                    await(client.release());
                 } catch (error) {
                     res.json(500, "Error while accessing db");
                     if (client !== undefined) {
-                        myawait(client.release(true));
+                        await(client.release(true));
                     }
 
             console.log('result (text) %s', text);

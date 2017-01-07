@@ -2,8 +2,8 @@
 
 
 /*jshint node:true */
-const ASYNC = require('asyncawait/async');
-const AWAIT = require('asyncawait/await');
+const async = require('asyncawait/async');
+const await = require('asyncawait/await');
 const Pool = require('pg').Pool;
 const types = require('pg').types;
 
@@ -33,11 +33,11 @@ const dbconfig = {
 const pool = new Pool(dbconfig);
 
 
-ASYNC (function (pool) {
+async(function (pool) {
     let client;
     try {
-        client = AWAIT(pool.connect());
-        let dbresult = AWAIT(client.query("SELECT * FROM version()"));
+        client = await(pool.connect());
+        let dbresult = await(client.query("SELECT * FROM version()"));
         client.release();
         console.log(dbresult.rows[0].version);
     } catch (error) {
