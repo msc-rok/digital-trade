@@ -1,5 +1,5 @@
 
-'use strict';
+//'use strict';
 
 //var async = require('asyncawait/async');
 const AWAIT = require('asyncawait/await');
