@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "authors": [
     "Marcel Scheid",
-	"Benedikt Michael Wagner",
-	"Karan Kumar"
+    "Benedikt Michael Wagner",
+    "Karan Kumar"
   ],
   "directory": "public/bower_components",
   "license": "MIT",

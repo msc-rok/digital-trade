@@ -14,9 +14,15 @@
     "postinstall": "bower install"
   },
   "dependencies": {
+    "asyncawait": "^1.0.6",
+    "ajv": "^4.10.0",
     "bower": "^1.4.1",
     "express": "~3.4.6",
+    "pg": "^6.1.1",
+    "pg-pool": "^1.6.0",
+    "pg-query-stream": "^1.0.0",
     "multer": "^0.1.8",
+    "url": "~0.11.0",
     "node-tesseract": "^0.2.7"
   },
   "engines": {
