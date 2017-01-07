@@ -1,6 +1,4 @@
-/**
- * Created by Minhaj on 6/20/15.
- */
+
 angular.module('digital-trade',
     [
         'ui.router',

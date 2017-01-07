@@ -1,10 +1,6 @@
-/**
- * Created by Minhaj on 6/20/15.
- */
 
-
-var express = require('express')
-    ,app = express();
+var express = require('express');
+var app = express();
 
 app.use(express.static('public'));
 

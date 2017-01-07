@@ -1,10 +1,13 @@
-/**
- * Created by Minhaj on 6/20/15.
- */
 
 var tesseract = require('node-tesseract');
 var multer  = require('multer');
 var fs = require('fs');
+
+const ASYNC = require('asyncawait/async');
+const AWAIT = require('asyncawait/await');
+
+const pool = require('../server/db');
+const ocr = require('../server/ocr');
 
 var upload = multer(
         {
@@ -27,8 +30,8 @@ module.exports = function(app) {
 };
 
 var options = {
-    l: 'deu',
-    psm: 6
+    l: process.env.OCR_OPTIONS_lang || 'deu',
+    psm:  process.env.OCR_OPTIONS_psm || 6
 };
 
 /**
@@ -57,8 +60,21 @@ var process = function(req, res) {
                 }
                 console.log('successfully deleted %s', path);
             });
+            
+            var client;
+            try {
+                    client = myawait(pool.connect());
+                    myawait(ocr.saveResult(res, client, options, text));
+                    myawait(client.release());
+                } catch (error) {
+                    res.json(500, "Error while accessing db");
+                    if (client !== undefined) {
+                        myawait(client.release(true));
+                    }
+
             console.log('result (text) %s', text);
             res.json(200, text);
-        }
+        };
     });
+
 };

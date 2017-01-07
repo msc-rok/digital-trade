@@ -1,8 +1,10 @@
 {
-  "name": "mulkiya-ocr",
+  "name": "digital-trade",
   "version": "1.0.0",
   "authors": [
-    "Minhaj Mehmood <minhaj.kk@gmail.com>"
+    "Marcel Scheid",
+	"Benedikt Michael Wagner",
+	"Karan Kumar"
   ],
   "directory": "public/bower_components",
   "license": "MIT",
