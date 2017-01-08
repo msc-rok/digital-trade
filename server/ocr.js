@@ -45,7 +45,7 @@ OCR.prototype.getRegex = function(macroPattern) {
     var groups = macroPattern.split('$');
     var i;
     for (i = 0; i <= groups.length - 1; i += 1) { 
-        regex += this.getRegexOfGroup(groups[i].tolower());
+        regex += this.getRegexOfGroup(groups[i].toLowerCase());
         if (i < groups.length-1){
              regex += regexWhitespaces;
         }
