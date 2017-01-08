@@ -8,13 +8,13 @@ const tools = require('../server/tools');
 
 var OCR = function () {};
 
-const regexWhitespaces = '\s+';
+const regexWhitespaces = '\\s+';
 
 const regexGroups = {
     name : '.+?',
-    price: '\d+\.\d+',
-    quantity: '\d',
-    EAN: '\d+'
+    price: '\\d+\\.\\d+',
+    quantity: '\\d',
+    EAN: '\\d+'
     // (?P<name>.+?)\s(?<price>\d+\.\d+)\s(?<quantity>\d)
 
 };
@@ -36,9 +36,9 @@ OCR.prototype.getRegexOfGroup = function(group){
             groupRegex = regexGroups.ean
             break;
     }
-    // (?P<name>.+?)s+(?P<price>d+.d+)s+(?P<quantity>d)s+(?P<ean>undefined)
-    // (?P<name>.+?)\s+(?<price>\d+\.\d+)\s(?<quantity>\d)
-    return `(?P<${group}>${groupRegex})`;
+    // (?P<name>.+?)\s+(?P<price>\d+\.\d+)\s+(?P<quantity>\d)
+    // (?P<name>.+?)\s+(?P<price>\d+\.\d+)\s(?<quantity>\d)
+    return `(${groupRegex})`;
 };
 
 OCR.prototype.getRegex = function(macroPattern) {
@@ -67,6 +67,9 @@ OCR.prototype.saveResult = function (res, client, options, result) {
    
     var regexPattern = this.getRegex(regexMacroPattern);
     console.log('regexPattern: ',regexPattern)
+
+    //TODO:
+    var regexGroups = { FirstName: 1, LastName: 2 };
 
     var regex = new RegExp(regexPattern);
 
