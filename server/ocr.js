@@ -8,13 +8,13 @@ const tools = require('../server/tools');
 
 var OCR = function () {};
 
-const regexWhitespaces = "\s+"
+const regexWhitespaces = '\s+';
 
 const regexGroups = {
-    name : ".+?",
-    price: "\d+\.\d+",
-    quantity: "\d",
-    EAN: "\d+"
+    name : '.+?',
+    price: '\d+\.\d+',
+    quantity: '\d',
+    EAN: '\d+'
     // (?P<name>.+?)\s(?<price>\d+\.\d+)\s(?<quantity>\d)
 
 };
@@ -36,6 +36,8 @@ OCR.prototype.getRegexOfGroup = function(group){
             groupRegex = regexGroups.ean
             break;
     }
+    // (?P<name>.+?)s+(?P<price>d+.d+)s+(?P<quantity>d)s+(?P<ean>undefined)
+    // (?P<name>.+?)\s+(?<price>\d+\.\d+)\s(?<quantity>\d)
     return `(?P<${group}>${groupRegex})`;
 };
 
@@ -43,7 +45,7 @@ OCR.prototype.getRegex = function(macroPattern) {
     var regex = "";
     var groups = macroPattern.split('$');
     var i;
-    for (i = 0; i <= groups.length - 1; i += 1) { 
+    for (i = 1; i <= groups.length - 1; i += 1) { 
         regex += this.getRegexOfGroup(groups[i].toLowerCase());
         if (i < groups.length-1){
              regex += regexWhitespaces;
@@ -60,7 +62,7 @@ OCR.prototype.saveResult = function (res, client, options, result) {
     var resultJson = {"result": result};
     //console.log('JSON.stringify(resultJson): ',JSON.stringify(resultJson))
 
-    var regexMacroPattern = config("OCR_REGEX_PATTERN") || "$NAME$PRICE$QUANTITY$EAN"
+    var regexMacroPattern = config("OCR_REGEX_PATTERN") || "$NAME$PRICE$QUANTITY"
     console.log('regexMacroPattern: ',regexMacroPattern)
    
     var regexPattern = this.getRegex(regexMacroPattern);
