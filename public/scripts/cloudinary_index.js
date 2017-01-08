@@ -1,6 +1,6 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import App from './cloudinary_app';
+var  React = require("react");
+var ReactDOM = require('react-dom');
+var App = require('./cloudinary_app');
 
 ReactDOM.render(
   <App />,
