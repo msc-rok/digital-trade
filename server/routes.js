@@ -45,12 +45,13 @@ var products = function (req, res) {
         var client;
         async(function (res) {
             try {
-                var resultJson;
                 client = await(pool.connect());
                 var dbProducts = await(new Product().get(client, req.params.id));
+
+                var dbReceiptItems;
                 if (req.params.id){
                     console.log(dbProducts);
-                    var dbReceiptItems = await(new ReceiptItem(null,req.params.id,null,null));
+                    dbReceiptItems = await(new ReceiptItem(null,req.params.id,null,null));
                     console.log(dbReceiptItems);
                 }
 
@@ -77,8 +78,8 @@ var receipts = function (req, res) {
         async(function (res) {
             try {
                 client = await(pool.connect());
-                var dbResult = await(new Receipt().get(client, req.params.id));
-                res.json(dbResult);
+                var dbReceipts = await(new Receipt().get(client, req.params.id));
+                res.json({receipts: dbReceipts});
                 if (client !== undefined) {
                     client.release(true);
                 }
@@ -97,8 +98,8 @@ var receiptitems = function (req, res) {
         async(function (res) {
             try {
                 client = await(pool.connect());
-                var dbResult = await(new ReceiptItem().get(client, req.params.id));
-                res.json(dbResult);
+                var dbReceiptItems = await(new ReceiptItem().get(client, req.params.id));
+                res.json({receiptitems: dbReceiptItems});
                 if (client !== undefined) {
                     client.release(true);
                 }
