@@ -45,7 +45,7 @@ OCR.prototype.getRegex = function(macroPattern) {
     var groups = macroPattern.split('$');
     var i;
     for (i = 0; i <= groups.length - 1; i += 1) { 
-        regex += ocr.getRegexOfGroup(groups[i].tolower());
+        regex += this.getRegexOfGroup(groups[i].tolower());
         if (i < groups.length-1){
              regex += regexWhitespaces;
         }
@@ -62,7 +62,7 @@ OCR.prototype.saveResult = function (res, client, options, result) {
     console.log('JSON.stringify(resultJson): ',JSON.stringify(resultJson))
 
     var regexMacroPattern = config("OCR_REGEX_PATTERN") || "$NAME$PRICE$QUANTITY$EAN"
-    var regexPattern = OCR.getRegex(regexMacroPattern);
+    var regexPattern = this.getRegex(regexMacroPattern);
     
     var regex = new RegExp(regexPattern);
 
