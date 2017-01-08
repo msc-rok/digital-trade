@@ -44,10 +44,7 @@ Receipt.prototype.save = function (client) {
     // INSERT INTO ocr.receipt(id, store, "user", amount, date) VALUES (?, ?, ?, ?, ?);
     var receipt = await(client.query(tools.replaceSchema('INSERT INTO $$SCHEMANAME$$.receipt(store, "user", amount, date) ' +
                         "VALUES ($1, $2, $3, $4) RETURNING id;"), [_store, _user, _amount, _date]));
-    console.log("receipt.id: ", receipt.rows[0].id);
-
-    var receipt = await(client.query(tools.replaceSchema("INSERT INTO $$SCHEMANAME$$.receipt(name) " +
-                        "VALUES ($1) RETURNING id;"), [name]));
+                        
     _id = receipt.rows[0].id;
     console.log("receipt.id: ", _id);
 
