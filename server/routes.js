@@ -48,10 +48,10 @@ var products = function (req, res) {
                 var dbProducts = await(new Product().get(client, req.params.id));
                 if (req.params.id){
                     var dbReceiptItems = await(new ReceiptItem(null,dbProducts[0].id,null,null));
-                    console.log(JSON.stringify(dbReceiptItems));
+                    console.log(dbReceiptItems);
                 }
 
-                res.json(JSON.stringify(dbProducts));
+                res.json(dbProducts);
                 if (client !== undefined) {
                     client.release(true);
                 }

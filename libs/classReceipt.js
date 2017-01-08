@@ -60,7 +60,7 @@ Receipt.prototype.get = function (client, id) {
     }
     var receipt = await(client.query(tools.replaceSchema(`SELECT * FROM $$SCHEMANAME$$.receipt WHERE ${condition};`)));
     
-    console.log("receipt: ", receipt.rows.lenghts);    
+    console.log("receipt: ", receipt.rows.length);    
 
     return receipt.rows;
 };
