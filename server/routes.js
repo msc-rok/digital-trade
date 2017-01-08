@@ -9,6 +9,7 @@ const await = require('asyncawait/await');
 const pool = require('../server/db');
 const ocr = require('../libs/ocr');
 var Product = require('../libs/classProduct');
+var Receipt = require('../libs/classReceipt');
 var ReceiptItem = require('../libs/classReceiptItem');
 
 var upload = multer(
