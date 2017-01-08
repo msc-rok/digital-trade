@@ -13,12 +13,8 @@ var _name;
 var _id;
 
 //noinspection JSLint
-function Product (client, name) {
+function Product (name) {
     _name = name;
-    _id = this.findSimilar(client,name);
-    if (!_id) {
-        _id = this.add(client,name);
-    }
 }
 
 Product.prototype.getId = function(){
@@ -29,15 +25,22 @@ Product.prototype.getName = function(){
     return _name;
 }
 
-Product.prototype.findSimilar = function (client, name) {
-    console.log("product.findSimilar(%s)", name);
+Product.prototype.save = function (client) {
+    _id = this.findSimilar(client);
+    if (!_id) {
+        _id = this.add(client);
+    }
+}
+
+Product.prototype.findSimilar = function (client) {
+    console.log("product.findSimilar(): ", json.stringify(this));
 
     await(client.query("SELECT set_limit($1); ", [similaritylimit]));
     var productSimilar = await(client.query(tools.replaceSchema(
         "SELECT similarity(p.name, $1) AS sim, p.id, p.name " +
         "FROM   $$SCHEMANAME$$.product p "+
         "WHERE  p.name % $1 " +
-        "ORDER  BY sim DESC LIMIT 1;"), [name]));
+        "ORDER  BY sim DESC LIMIT 1;"), [_name]));
     
     var productid;
     if (productSimilar.rows.length > 0){
@@ -51,12 +54,12 @@ Product.prototype.findSimilar = function (client, name) {
     return productid;
 };
 
-Product.prototype.add = function (client, name) {
-    console.log("product.add(%s)", name);
+Product.prototype.add = function (client) {
+    console.log("product.add(): ", JSON.stringify(this));
 
     // INSERT INTO ocr.product(id, name) VALUES (?, ?);
     var product = await(client.query(tools.replaceSchema("INSERT INTO $$SCHEMANAME$$.product(name) " +
-                        "VALUES ($1) RETURNING id;"), [name]));
+                        "VALUES ($1) RETURNING id;"), [_name]));
     var productid = product.rows[0].id;
     
     console.log("product.id: ", productid);

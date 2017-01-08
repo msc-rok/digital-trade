@@ -5,8 +5,10 @@
 const await = require('asyncawait/await');
 
 const tools = require('../server/tools');
-const receiptItem = require('../libs/classReceiptItem');
 
+var Receipt = require('../libs/classReceipt');
+var ReceiptItem = require('../libs/classReceiptItem');
+var Product = require('../libs/classProduct');
 
 function OCR() {};
 
@@ -77,36 +79,39 @@ OCR.prototype.getRegex = function(macroPattern) {
 OCR.prototype.saveResult = function (res, client, result) {
     console.log('Before ocr.saveResult()');
 
-    var resultJson = {"result": result};
-    //console.log('JSON.stringify(resultJson): ',JSON.stringify(resultJson))
-
-    console.log('regexMacroPattern: ',regexMacroPattern)
-   
-    var regexPattern = this.getRegex(regexMacroPattern);
-    console.log('regexPattern: ',regexPattern)
+    await(client.query(tools.replaceSchema("INSERT INTO $$SCHEMANAME$$.ocrresult(result, receipt, quality, psm, lang, img) " +
+                " VALUES ($1,$2,$3,$4,$5,$6)"), [JSON.stringify(resultJson), null, 1.0, options.psm, options.l, null]));
 
     
+    var receipt = new Receipt(null, null, 1234, new Date);
+    receipt.save(client);
+
+    var resultJson = {"result": result};
+    //console.log('JSON.stringify(resultJson): ',JSON.stringify(resultJson))
+   
+    var regexPattern = this.getRegex(regexMacroPattern);
+    console.log('regexMacroPattern: ',regexMacroPattern)
+    console.log('regexPattern: ',regexPattern)
 
     var regex = new RegExp(regexPattern,"g");
 
-    // INSERT INTO ocr.receipt(id, store, "user", amount, date) VALUES (?, ?, ?, ?, ?);
-    var receipt = await(client.query(tools.replaceSchema('INSERT INTO $$SCHEMANAME$$.receipt(store, "user", amount, date) ' +
-                        "VALUES ($1, $2, $3, $4) RETURNING id;"), [null, null, 1234, new Date()]));
-    console.log("receipt.id: ", receipt.rows[0].id);
-
+    var product;
+    var receiptItem;
     var match;
     while (match = regex.exec(result)) {
-        var i;
-        /*for (i = 0; i <= match.length - 1; i += 1) { 
+        /*var i;
+        for (i = 0; i <= match.length - 1; i += 1) { 
             console.log(`Match ${i}: ${match[i]}`);
         }*/
         console.log(`receiptItem.save: ${match[0]}`);
-        await(receiptItem.save(client, receipt.rows[0].id, match[regexGroupIndex.name], match[regexGroupIndex.price], match[regexGroupIndex.quantity]));
+
+        product = new Product(match[regexGroupIndex.name]);
+        product.save(client);
+
+        receiptItem = new ReceiptItem(receipt.getId(), product.getId(), match[regexGroupIndex.price], match[regexGroupIndex.quantity])
+        receiptItem.save(client);
     }
 
-
-    await(client.query(tools.replaceSchema("INSERT INTO $$SCHEMANAME$$.ocrresult(result, receipt, quality, psm, lang, img) " +
-                    " VALUES ($1,$2,$3,$4,$5,$6)"), [JSON.stringify(resultJson), null, 1.0, options.psm, options.l, null]));
     console.log('After ocr.saveResult()');
     
     //await(users.auditLog(client, userId, constants.AuditProcess, 'Updated templates (' + name + ')', null, obj.length));

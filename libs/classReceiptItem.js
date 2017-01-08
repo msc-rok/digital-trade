@@ -6,51 +6,49 @@ const await = require('asyncawait/await');
 //Project references
 const tools = require('../server/tools');
 const constants = require('../libs/constants');
-var Product = require('../libs/classProduct');
 
-const similaritylimit = config("DATABASE_SIMILARITY_LIMIT") || 0.6
+var _id;
+var _receipt;
+var _product;
+var _price;
+var _quantity;
 
 //noinspection JSLint
-function ReceiptItem () {
+function ReceiptItem (receipt, product, price, quantity) {
+    _receipt = receipt;
+    _product = product;
+    _price = price;
+    _quantity = quantity;
 };
 
+ReceiptItem.prototype.getId = function(){
+    return _id;
+}
+ReceiptItem.prototype.getReceipt = function(){
+    return _receipt;
+}
+ReceiptItem.prototype.getProduct = function(){
+    return _product;
+}
+ReceiptItem.prototype.getPrice = function(){
+    return _price;
+}
+ReceiptItem.prototype.getQuantity = function(){
+    return _quantity;
+}
 
-ReceiptItem.prototype.save = function (client, receipt, name, price, quantity) {
-    // INSERT INTO ocr.receipt_item(receipt, id, product, price, quantity) VALUES (?, ?, ?, ?, ?);
-    // INSERT INTO ocr.receipt(id, store, "user", amount, date) VALUES (?, ?, ?, ?, ?);
-    // INSERT INTO ocr.product(id, name) VALUES (?, ?);
-    
-    console.log("name: ", name);
-    console.log("price: ", price);
-    console.log("quantity: ", quantity);
 
-    /*await(client.query("SELECT set_limit($1); ", [similaritylimit]));
-    var productSimilar = await(client.query(tools.replaceSchema(
-        "SELECT similarity(p.name, $1) AS sim, p.id, p.name " +
-        "FROM   $$SCHEMANAME$$.product p "+
-        "WHERE  p.name % $1 " +
-        "ORDER  BY sim DESC LIMIT 1;"), [name]));
-    
-    var productid;
-    if (productSimilar.rows.length > 0){
-        console.log("productSimilar: ", JSON.stringify(productSimilar.rows[0]) );
-        productid = productSimilar.rows[0].id;
-    }else{
-        var product = await(client.query(tools.replaceSchema("INSERT INTO $$SCHEMANAME$$.product(name) " +
-                        "VALUES ($1) RETURNING id;"), [name]));
-        productid=product.rows[0].id;
-        }
-    
-    console.log("product.id: ", productid);
-    
-    */
-
-    var product = new Product(client,name);
+ReceiptItem.prototype.save = function (client) {
+    // INSERT INTO ocr.receipt_item(receipt, id, product, price, quantity) VALUES (?, ?, ?, ?, ?);;
+    console.log("ReceiptItem.save: ", JSON.stringify(this));
 
     var receipt_item = await(client.query(tools.replaceSchema("INSERT INTO $$SCHEMANAME$$.receipt_item(receipt, product, price, quantity) " +
-                        " VALUES ($1,$2,$3,$4) RETURNING id;"), [receipt, product.getId(), price, quantity]));
-    console.log("receipt_item.id: ", receipt_item.rows[0].id);
+                        " VALUES ($1,$2,$3,$4) RETURNING id;"), [_receipt, _product, _price, _quantity]));
+    _id = receipt_item.rows[0].id;
+    console.log("receipt_item.id: ", _id);
+    
+    return _id;
 };
 
 
-module.exports = new ReceiptItem();
+module.exports = ReceiptItem;
