@@ -135,7 +135,7 @@ var process = function(req, res) {
 
     var path = req.files.file.path;
     var result;
-    
+
     // Recognize text of any language in any format
     tesseract.process(path, ocr.getOptions(), function(err, text) {
         if(err) {
@@ -163,7 +163,7 @@ var process = function(req, res) {
                 };
             })(res, text);
             console.log('result (text) %s', text);
-            res.json(200, result);
+            res.json(200, text);
                 
         };
     });
