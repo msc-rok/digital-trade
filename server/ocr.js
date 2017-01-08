@@ -71,13 +71,13 @@ OCR.prototype.saveResult = function (res, client, options, result) {
     //TODO:
     var regexGroups = { FirstName: 1, LastName: 2 };
 
-    var regex = new RegExp(regexPattern);
+    var regex = new RegExp(regexPattern,"g");
 
     var match;
-    while ((match = regex.exec(result)) !== null) {
+    while (match = regex.exec(result)) {
         var i;
         for (i = 0; i <= match.length - 1; i += 1) { 
-            console.log("Match $1: $2", [i, match[i]]);
+            console.log(`Match ${i}: ${match[i]}`);
          }
     }
 
