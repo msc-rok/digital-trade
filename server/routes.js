@@ -148,9 +148,10 @@ var process = function(req, res) {
             });
             async(function (res, text) {
                 var client;
+                var result;
                 try {
                         client = await(pool.connect());
-                        await(ocr.saveResult(res, client, text));
+                        result = await(ocr.saveResult(res, client, text));
                         await(client.release());
                     } catch (error) {
                         console.log('%s', error)
@@ -161,7 +162,7 @@ var process = function(req, res) {
                 };
             })(res, text);
             console.log('result (text) %s', text);
-            res.json(200, text);
+            res.json(200, result);
                 
         };
     });

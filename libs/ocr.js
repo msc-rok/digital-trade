@@ -96,7 +96,9 @@ OCR.prototype.saveResult = function (res, client, result) {
     var regex = new RegExp(regexPattern,"g");
 
     var product;
+    var products = [];
     var receiptItem;
+    var receiptItems = [];
     var match;
     while (match = regex.exec(result)) {
         /*var i;
@@ -107,13 +109,21 @@ OCR.prototype.saveResult = function (res, client, result) {
 
         product = new Product(match[regexGroupIndex.name]);
         product.save(client);
+        products.push(product);
 
         receiptItem = new ReceiptItem(receipt.getId(), product.getId(), match[regexGroupIndex.price], match[regexGroupIndex.quantity])
         receiptItem.save(client);
+        receiptItems.push(receiptItem);
     }
 
     console.log('After ocr.saveResult()');
-    
+    var result = {receipts: receipt,
+        products: products,
+        receiptitems: receiptitems
+    };
+    console.log(JSON.stringify(result));
+
+    return result;
     //await(users.auditLog(client, userId, constants.AuditProcess, 'Updated templates (' + name + ')', null, obj.length));
     //await(client.query("COMMIT"));
     //res.json({result: 'Rows received: ' + obj.length});
