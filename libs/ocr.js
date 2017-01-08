@@ -86,7 +86,7 @@ OCR.prototype.saveResult = function (res, client, result) {
     var receipt = new Receipt(null, null, 1234, new Date);
     receipt.save(client);
 
-    var resultJson = {"result": result};
+    var response;
     //console.log('JSON.stringify(resultJson): ',JSON.stringify(resultJson))
    
     var regexPattern = this.getRegex(regexMacroPattern);
@@ -117,13 +117,13 @@ OCR.prototype.saveResult = function (res, client, result) {
     }
 
     console.log('After ocr.saveResult()');
-    var result = {receipts: receipt,
+    response = {receipts: receipt,
         products: products,
         receiptitems: receiptItems
     };
-    console.log(JSON.stringify(result));
+    console.log(JSON.stringify(response));
 
-    return result;
+    return response;
     //await(users.auditLog(client, userId, constants.AuditProcess, 'Updated templates (' + name + ')', null, obj.length));
     //await(client.query("COMMIT"));
     //res.json({result: 'Rows received: ' + obj.length});
