@@ -119,7 +119,7 @@ OCR.prototype.saveResult = function (res, client, result) {
     console.log('After ocr.saveResult()');
     var result = {receipts: receipt,
         products: products,
-        receiptitems: receiptitems
+        receiptitems: receiptItems
     };
     console.log(JSON.stringify(result));
 
