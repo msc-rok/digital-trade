@@ -1,6 +1,6 @@
-import React from 'react';
-import Dropzone from 'react-dropzone';
-import request from 'superagent';
+var React = require("react");
+var Dropzone = require('react-dropzone');
+var request = require('superagent');
 
 const CLOUDINARY_UPLOAD_PRESET = 'o5dy6l5w';
 const CLOUDINARY_UPLOAD_URL = 'https://api.cloudinary.com/v1_1/hdvhoxcbj/image/upload';
