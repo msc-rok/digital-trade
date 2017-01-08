@@ -48,15 +48,12 @@ var products = function (req, res) {
                 client = await(pool.connect());
                 var dbProducts = await(new Product().get(client, req.params.id));
                 if (req.params.id){
-                    console.log(JSON.parse(dbProducts).products[0].id)
-                    var dbReceiptItems = await(new ReceiptItem(null,JSON.parse(dbProducts).products[0].id,null,null));
-                    console.log(JSON.stringify(dbReceiptItems));
+                    console.log(dbProducts);
+                    var dbReceiptItems = await(new ReceiptItem(null,req.params.id,null,null));
+                    console.log(dbReceiptItems);
                 }
 
-                res.json(JSON.stringify({
-                    products: JSON.parse(dbProducts).products,
-                    receiptitems:  JSON.parse(dbReceiptItems).receiptitems
-                }));
+                res.json(dbProducts);
 
                 if (client !== undefined) {
                     client.release(true);
