@@ -15,9 +15,9 @@ var _id;
 //noinspection JSLint
 function Product (client, name) {
     _name = name;
-    _id = this.findSimilar(name);
+    _id = this.findSimilar(client,name);
     if (!_id) {
-        _id = this.add(name);
+        _id = this.add(client,name);
     }
 }
 
