@@ -78,7 +78,7 @@ Product.prototype.get = function (client, id) {
     
     console.log("products: ", products.rows.lenghts);    
 
-    return products;
+    return products.rows;
 };
 
 
