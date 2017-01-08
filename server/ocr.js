@@ -8,7 +8,7 @@ const tools = require('../server/tools');
 
 var OCR = function () {};
 
-const regexWhitespaces = '"\s+"'
+const regexWhitespaces = "\s+"
 
 const regexGroups = {
     name : ".+?",
@@ -36,8 +36,7 @@ OCR.prototype.getRegexOfGroup = function(group){
             groupRegex = regexGroups.ean
             break;
     }
-
-    return ("(?P<$1>$2)", [group, groupRegex]);
+    return `(?P<${group}>${groupRegex})`;
 };
 
 OCR.prototype.getRegex = function(macroPattern) {
