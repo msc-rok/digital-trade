@@ -1,16 +1,6 @@
-
 import React from 'react';
-import ReactDOM from 'react-dom';
-import App from './App';
-
-ReactDOM.render(
-  <App />,
-  document.getElementById('root')
-);
-
 import Dropzone from 'react-dropzone';
 import request from 'superagent';
-import './App.css';
 
 const CLOUDINARY_UPLOAD_PRESET = 'o5dy6l5w';
 const CLOUDINARY_UPLOAD_URL = 'https://api.cloudinary.com/v1_1/hdvhoxcbj/image/upload';
