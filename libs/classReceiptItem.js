@@ -27,4 +27,4 @@ ReceiptItem.prototype.save = function (client, name, price, quantity) {
 };
 
 
-module.exports = ReceiptItem();
+module.exports = new ReceiptItem();
