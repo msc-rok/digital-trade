@@ -79,15 +79,12 @@ OCR.prototype.getRegex = function(macroPattern) {
 OCR.prototype.saveResult = function (res, client, result) {
     console.log('Before ocr.saveResult()');
 
+    var resultJson = {"result": result};
     await(client.query(tools.replaceSchema("INSERT INTO $$SCHEMANAME$$.ocrresult(result, receipt, quality, psm, lang, img) " +
                 " VALUES ($1,$2,$3,$4,$5,$6)"), [JSON.stringify(resultJson), null, 1.0, options.psm, options.l, null]));
 
-    
     var receipt = new Receipt(null, null, 1234, new Date);
     receipt.save(client);
-
-    var response;
-    //console.log('JSON.stringify(resultJson): ',JSON.stringify(resultJson))
    
     var regexPattern = this.getRegex(regexMacroPattern);
     console.log('regexMacroPattern: ',regexMacroPattern)
@@ -116,11 +113,13 @@ OCR.prototype.saveResult = function (res, client, result) {
         receiptItems.push(receiptItem);
     }
 
-    console.log('After ocr.saveResult()');
-    response = {receipts: receipt,
+    var response = {receipts: receipt,
         products: products,
         receiptitems: receiptItems
-    };
+    }
+
+    console.log('After ocr.saveResult()');
+    console.log(response);
     console.log(JSON.stringify(response));
 
     return response;
