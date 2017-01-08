@@ -22,12 +22,26 @@ ReceiptItem.prototype.save = function (client, receipt, name, price, quantity) {
     console.log("price: ", price);
     console.log("quantity: ", quantity);
 
-    var product = await(client.query(tools.replaceSchema("INSERT INTO $$SCHEMANAME$$.product(name) " +
+    var productSimilar = await(client.query(tools.replaceSchema("SELECT set_limit(0.7); " +
+        "SELECT similarity(p.name, $1) AS sim, p.id, p.name " +
+        "FROM   $$SCHEMANAME$$.product p "+
+        "WHERE  p.name % $1 " +
+        "ORDER  BY sim DESC LIMIT 1;"), [name]));
+    
+    var productid;
+    if (productSimilar.rows.length > 0){
+        console.log("productSimilar: ", JSON.stringify(productSimilar.rows[0]) );
+        productid = productSimilar.rows[0].id;
+    }else{
+        var product = await(client.query(tools.replaceSchema("INSERT INTO $$SCHEMANAME$$.product(name) " +
                         "VALUES ($1) RETURNING id;"), [name]));
-    console.log("product.id: ", product.rows[0].id);
+        productid=product.rows[0].id;
+        }
+    
+    console.log("product.id: ", productid);
     
     var receipt_item = await(client.query(tools.replaceSchema("INSERT INTO $$SCHEMANAME$$.receipt_item(receipt, product, price, quantity) " +
-                        " VALUES ($1,$2,$3,$4) RETURNING id;"), [receipt, product.rows[0].id, price, quantity]));
+                        " VALUES ($1,$2,$3,$4) RETURNING id;"), [receipt, productid, price, quantity]));
     console.log("receipt_item.id: ", receipt_item.rows[0].id);
 };
 
