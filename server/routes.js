@@ -134,7 +134,8 @@ var receiptitems = function (req, res) {
 var process = function(req, res) {
 
     var path = req.files.file.path;
-
+    var result;
+    
     // Recognize text of any language in any format
     tesseract.process(path, ocr.getOptions(), function(err, text) {
         if(err) {
@@ -148,7 +149,7 @@ var process = function(req, res) {
             });
             async(function (res, text) {
                 var client;
-                var result;
+                
                 try {
                         client = await(pool.connect());
                         result = await(ocr.saveResult(res, client, text));
