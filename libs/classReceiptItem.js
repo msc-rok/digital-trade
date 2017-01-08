@@ -60,8 +60,10 @@ ReceiptItem.prototype.get = function (client, id) {
     if (_product){
         condition += ` AND product=${_product}`;
     }
-   
-    
+   if (_receipt){
+        condition += ` AND receipt=${_receipt}`;
+    }
+
 
     var items = await(client.query(tools.replaceSchema(`SELECT * FROM $$SCHEMANAME$$.receipt_item WHERE ${condition};`)));
     
