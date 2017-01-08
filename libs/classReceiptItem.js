@@ -22,7 +22,8 @@ ReceiptItem.prototype.save = function (client, receipt, name, price, quantity) {
     console.log("price: ", price);
     console.log("quantity: ", quantity);
 
-    var productSimilar = await(client.query(tools.replaceSchema("SELECT set_limit(0.7); " +
+    await(client.query("SELECT set_limit(0.7); "));
+    var productSimilar = await(client.query(tools.replaceSchema(
         "SELECT similarity(p.name, $1) AS sim, p.id, p.name " +
         "FROM   $$SCHEMANAME$$.product p "+
         "WHERE  p.name % $1 " +
