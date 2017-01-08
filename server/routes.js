@@ -69,6 +69,23 @@ var products = function (req, res) {
     }
 
 var receipts = function (req, res) {
+        var client;
+        async(function (res) {
+            try {
+                client = await(pool.connect());
+                var dbResult = await(new Receipt().get(client, req.params.id));
+                res.json(dbResult);
+                if (client !== undefined) {
+                    client.release(true);
+                }
+            } catch (error) {
+                console.log(error);
+                res.status(500).send();
+                if (client !== undefined) {
+                    client.release(true);
+                }
+            }
+        })(res);
 };
 
 var receiptitems = function (req, res) {
@@ -77,7 +94,7 @@ var receiptitems = function (req, res) {
             try {
                 client = await(pool.connect());
                 var dbResult = await(new ReceiptItem().get(client, req.params.id));
-                res.json(JSON.stringify(dbResult));
+                res.json(dbResult);
                 if (client !== undefined) {
                     client.release(true);
                 }
