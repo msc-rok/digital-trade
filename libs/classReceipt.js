@@ -6,7 +6,6 @@ const await = require('asyncawait/await');
 //Project references
 const tools = require('../server/tools');
 const constants = require('../libs/constants');
-var Product = require('../libs/classProduct');
 
 const similaritylimit = config("DATABASE_SIMILARITY_LIMIT") || 0.6
 
@@ -24,7 +23,7 @@ ReceiptItem.prototype.save = function (client, receipt, name, price, quantity) {
     console.log("price: ", price);
     console.log("quantity: ", quantity);
 
-    /*await(client.query("SELECT set_limit($1); ", [similaritylimit]));
+    await(client.query("SELECT set_limit($1); ", [similaritylimit]));
     var productSimilar = await(client.query(tools.replaceSchema(
         "SELECT similarity(p.name, $1) AS sim, p.id, p.name " +
         "FROM   $$SCHEMANAME$$.product p "+
@@ -43,12 +42,8 @@ ReceiptItem.prototype.save = function (client, receipt, name, price, quantity) {
     
     console.log("product.id: ", productid);
     
-    */
-
-    var product = new Product(client,name);
-
     var receipt_item = await(client.query(tools.replaceSchema("INSERT INTO $$SCHEMANAME$$.receipt_item(receipt, product, price, quantity) " +
-                        " VALUES ($1,$2,$3,$4) RETURNING id;"), [receipt, product.getId(), price, quantity]));
+                        " VALUES ($1,$2,$3,$4) RETURNING id;"), [receipt, productid, price, quantity]));
     console.log("receipt_item.id: ", receipt_item.rows[0].id);
 };
 
