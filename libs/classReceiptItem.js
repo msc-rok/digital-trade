@@ -61,6 +61,8 @@ ReceiptItem.prototype.get = function (client, id) {
         condition += ` AND product=${_product}`;
     }
    
+    
+
     var items = await(client.query(tools.replaceSchema(`SELECT * FROM $$SCHEMANAME$$.receipt_item WHERE ${condition};`)));
     
     console.log("items: ", items.rows.length);    

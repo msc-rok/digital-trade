@@ -51,7 +51,7 @@ var products = function (req, res) {
                 var dbReceiptItems;
                 if (req.params.id){
                     console.log(dbProducts);
-                    dbReceiptItems = await(new ReceiptItem(null,req.params.id,null,null));
+                    dbReceiptItems = await(new ReceiptItem(null,req.params.id,null,null).get(client));
                     console.log(dbReceiptItems);
                 }
 
