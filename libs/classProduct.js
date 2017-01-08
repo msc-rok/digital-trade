@@ -75,7 +75,7 @@ Product.prototype.get = function (client, id) {
         condition = `id=${id}`;
     }
     //select array_to_json(array_agg(row_to_json(t))) as measures from (select * from $$SCHEMANAME$$.templatesmeasures) t;"
-    var products = await(client.query(tools.replaceSchema(`select array_to_json(array_agg(row_to_json(t))) as products from (SELECT * FROM $$SCHEMANAME$$.product WHERE ${condition}) t;`)));
+    var products = await(client.query(tools.replaceSchema(`SELECT * FROM $$SCHEMANAME$$.product WHERE ${condition};`)));
     
     console.log("products: ", products.rows.length);    
 

@@ -54,7 +54,10 @@ var products = function (req, res) {
                     console.log(dbReceiptItems);
                 }
 
-                res.json(dbProducts);
+                res.json({
+                        products: dbProducts,
+                        receiptitems: dbReceiptItems
+                    });
 
                 if (client !== undefined) {
                     client.release(true);
