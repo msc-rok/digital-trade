@@ -39,6 +39,7 @@ module.exports = function(app) {
                     client.release(true);
                 }
             } catch (error) {
+                console.log(error);
                 res.status(500).send();
                 if (client !== undefined) {
                     client.release(true);
