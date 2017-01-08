@@ -76,7 +76,7 @@ Product.prototype.get = function (client, id) {
     }
     var products = await(client.query(tools.replaceSchema(`SELECT * FROM $$SCHEMANAME$$.product WHERE ${condition};`)));
     
-    console.log("products: ", product.rows.lenghts);    
+    console.log("products: ", products.rows.lenghts);    
 
     return products;
 };
