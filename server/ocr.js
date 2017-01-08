@@ -59,11 +59,14 @@ OCR.prototype.saveResult = function (res, client, options, result) {
     console.log('Before ocr.saveResult()');
 
     var resultJson = {"result": result};
-    console.log('JSON.stringify(resultJson): ',JSON.stringify(resultJson))
+    //console.log('JSON.stringify(resultJson): ',JSON.stringify(resultJson))
 
     var regexMacroPattern = config("OCR_REGEX_PATTERN") || "$NAME$PRICE$QUANTITY$EAN"
+    console.log('regexMacroPattern: ',regexMacroPattern)
+   
     var regexPattern = this.getRegex(regexMacroPattern);
-    
+    console.log('regexPattern: ',regexPattern)
+
     var regex = new RegExp(regexPattern);
 
     var match;
