@@ -50,5 +50,23 @@ ReceiptItem.prototype.save = function (client) {
     return _id;
 };
 
+ReceiptItem.prototype.get = function (client, id) {
+    console.log("ReceiptItem.get(): ", JSON.stringify(this));
+
+    var condition = `1=1`;
+    if (id){
+        condition += ` AND id=${id}`;
+    }
+    if (_product){
+        condition += ` AND product=${_product}`;
+    }
+   
+    var items = await(client.query(tools.replaceSchema(`SELECT * FROM $$SCHEMANAME$$.receipt_item WHERE ${condition};`)));
+    
+    console.log("items: ", items.rows.lenghts);    
+
+    return items.rows;
+};
+
 
 module.exports = ReceiptItem;

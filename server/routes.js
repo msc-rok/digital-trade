@@ -9,6 +9,7 @@ const await = require('asyncawait/await');
 const pool = require('../server/db');
 const ocr = require('../libs/ocr');
 var Product = require('../libs/classProduct');
+var ReceiptItem = require('../libs/classReceiptItem');
 
 var upload = multer(
         {
@@ -26,14 +27,53 @@ module.exports = function(app) {
         }
     ));
 
-    app.post("/api/ocr",  process);
+    app.post("/api/ocr", process);
 
-    app.get("/products", function (req, res) {
+    app.get("/api/receipts", receipts);
+    app.get("/api/receipts/:id", receipts);
+
+    app.get("/api/products", products);
+    app.get("/api/products/:id", products);
+
+    app.get("/api/receiptitems", receiptitems);
+    app.get("/api/receiptitems/:id", receiptitems);
+
+};
+
+var products = function (req, res) {
         var client;
         async(function (res) {
             try {
                 client = await(pool.connect());
-                var dbResult = await(new Product().get(client, null));
+                var dbProducts = await(new Product().get(client, req.params.id));
+                if (req.params.id){
+                    var dbReceiptItems = await(new ReceiptItem(null,dbProducts[0].id,null,null));
+                    console.log(JSON.stringify(dbReceiptItems));
+                }
+
+                res.json(JSON.stringify(dbProducts));
+                if (client !== undefined) {
+                    client.release(true);
+                }
+            } catch (error) {
+                console.log(error);
+                res.status(500).send();
+                if (client !== undefined) {
+                    client.release(true);
+                }
+            }
+        })(res);
+    }
+
+var receipts = function (req, res) {
+};
+
+var receiptitems = function (req, res) {
+        var client;
+        async(function (res) {
+            try {
+                client = await(pool.connect());
+                var dbResult = await(new ReceiptItem().get(client, req.params.id));
                 res.json(JSON.stringify(dbResult));
                 if (client !== undefined) {
                     client.release(true);
@@ -46,9 +86,7 @@ module.exports = function(app) {
                 }
             }
         })(res);
-});
-
-};
+    }
 
 /**
  * Following steps done under this functions.

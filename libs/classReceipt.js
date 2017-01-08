@@ -44,11 +44,25 @@ Receipt.prototype.save = function (client) {
     // INSERT INTO ocr.receipt(id, store, "user", amount, date) VALUES (?, ?, ?, ?, ?);
     var receipt = await(client.query(tools.replaceSchema('INSERT INTO $$SCHEMANAME$$.receipt(store, "user", amount, date) ' +
                         "VALUES ($1, $2, $3, $4) RETURNING id;"), [_store, _user, _amount, _date]));
-                        
+
     _id = receipt.rows[0].id;
     console.log("receipt.id: ", _id);
 
     return _id;
+};
+
+Receipt.prototype.get = function (client, id) {
+    console.log("receipt.get(): ", JSON.stringify(this));
+
+    var condition = `1=1`;
+    if (id){
+        condition += ` AND id=${id}`;
+    }
+    var receipt = await(client.query(tools.replaceSchema(`SELECT * FROM $$SCHEMANAME$$.receipt WHERE ${condition};`)));
+    
+    console.log("receipt: ", receipt.rows.lenghts);    
+
+    return receipt.rows;
 };
 
 
