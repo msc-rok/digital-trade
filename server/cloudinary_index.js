@@ -3,6 +3,6 @@ var ReactDOM = require('react-dom');
 var App = require('../public/scripts/cloudinary_app');
 
 ReactDOM.render(
-  <App />,
+  App,
   document.getElementById('root')
 );
