@@ -15,6 +15,9 @@ var options = {
     psm:  config("OCR_OPTIONS_PSM") || 6
 };
 
+const regexMacroPattern = config("OCR_REGEX_PATTERN") || "$NAME$PRICE$QUANTITY"
+var regexGroupIndex = { name: 1, price: 2, quantity: 3, ean: 4 };
+
 const regexWhitespaces = '\\s+';
 
 const regexGroups = {
@@ -30,21 +33,25 @@ OCR.prototype.getOptions = function(){
     return options;
 }
 
-OCR.prototype.getRegexOfGroup = function(group){
+OCR.prototype.getRegexOfGroup = function(group, index){
     var groupRegex;
     switch (group)
     {
         case "name":
             groupRegex = regexGroups.name;
+            regexGroupIndex.name = index;
             break;
         case "price":
-            groupRegex = regexGroups.price
+            groupRegex = regexGroups.price;
+            regexGroupIndex.price = index;
             break;
         case "quantity":
-            groupRegex = regexGroups.quantity
+            groupRegex = regexGroups.quantity;
+            regexGroupIndex.quantity = index;
             break;
         case "ean":
-            groupRegex = regexGroups.ean
+            groupRegex = regexGroups.ean;
+            regexGroupIndex.ean = index;
             break;
     }
     // (?P<name>.+?)\s+(?P<price>\d+\.\d+)\s+(?P<quantity>\d)
@@ -57,7 +64,7 @@ OCR.prototype.getRegex = function(macroPattern) {
     var groups = macroPattern.split('$');
     var i;
     for (i = 1; i <= groups.length - 1; i += 1) { 
-        regex += this.getRegexOfGroup(groups[i].toLowerCase());
+        regex += this.getRegexOfGroup(groups[i].toLowerCase(), i);
         if (i < groups.length-1){
              regex += regexWhitespaces;
         }
@@ -73,14 +80,12 @@ OCR.prototype.saveResult = function (res, client, result) {
     var resultJson = {"result": result};
     //console.log('JSON.stringify(resultJson): ',JSON.stringify(resultJson))
 
-    var regexMacroPattern = config("OCR_REGEX_PATTERN") || "$NAME$PRICE$QUANTITY"
     console.log('regexMacroPattern: ',regexMacroPattern)
    
     var regexPattern = this.getRegex(regexMacroPattern);
     console.log('regexPattern: ',regexPattern)
 
-    //TODO:
-    var regexGroups = { FirstName: 1, LastName: 2 };
+    
 
     var regex = new RegExp(regexPattern,"g");
 
@@ -96,11 +101,11 @@ OCR.prototype.saveResult = function (res, client, result) {
             console.log(`Match ${i}: ${match[i]}`);
         }*/
         console.log(`receiptItem.save: ${match[0]}`);
-        await(receiptItem.save(client, receipt.rows[0].id, match[1], match[2], match[3]));
+        await(receiptItem.save(client, receipt.rows[0].id, match[regexGroupIndex.name], match[regexGroupIndex.price], match[regexGroupIndex.quantity]));
     }
 
 
-    await(client.query(tools.replaceSchema("INSERT INTO $$SCHEMANAME$$.ocr_result(result, receipt, quality, psm, lang, img) " +
+    await(client.query(tools.replaceSchema("INSERT INTO $$SCHEMANAME$$.ocrresult(result, receipt, quality, psm, lang, img) " +
                     " VALUES ($1,$2,$3,$4,$5,$6)"), [JSON.stringify(resultJson), null, 1.0, options.psm, options.l, null]));
     console.log('After ocr.saveResult()');
     
