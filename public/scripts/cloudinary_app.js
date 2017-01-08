@@ -5,25 +5,24 @@ var request = require('superagent');
 const CLOUDINARY_UPLOAD_PRESET = 'o5dy6l5w';
 const CLOUDINARY_UPLOAD_URL = 'https://api.cloudinary.com/v1_1/hdvhoxcbj/image/upload';
 
-export default class App extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
+var App = React.createClass({
+  // Set up initial state
+  getInitialState: function() {
+    return {
       uploadedFile: null,
       uploadedFileCloudinaryUrl: ''
     };
   }
-
-  onImageDrop(files) {
+,
+  onImageDrop: function(files) {
     this.setState({
       uploadedFile: files[0]
     });
 
     this.handleImageUpload(files[0]);
   }
-
-  handleImageUpload(file) {
+,
+  handleImageUpload: function(file) {
     let upload = request.post(CLOUDINARY_UPLOAD_URL)
                      .field('upload_preset', CLOUDINARY_UPLOAD_PRESET)
                      .field('file', file);
@@ -41,9 +40,9 @@ export default class App extends React.Component {
 
       
     });
-  }
+  },
 
-  render() {
+   render: function() {
     return (
       <form>
         <div className="FileUpload">
@@ -65,4 +64,6 @@ export default class App extends React.Component {
       </form>
     )
   }
-}
+});
+
+module.exports = App;
