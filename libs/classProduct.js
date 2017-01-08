@@ -68,13 +68,13 @@ Product.prototype.add = function (client) {
 };
 
 Product.prototype.get = function (client, id) {
-    console.log("product.add(): ", JSON.stringify(this));
+    console.log("product.get(): ", JSON.stringify(this));
 
-    var condition = "1=1";
+    var condition = `1=1`;
     if (id){
         condition = `id=${id}`;
     }
-    var products = await(client.query(tools.replaceSchema("SELECT * FROM $$SCHEMANAME$$.product WHERE $1;"), [condition]));
+    var products = await(client.query(tools.replaceSchema(`SELECT * FROM $$SCHEMANAME$$.product WHERE ${condition}};`)));
     
     console.log("products: ", product.rows.lenghts);
 
