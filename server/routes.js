@@ -45,7 +45,7 @@ var process = function(req, res) {
     var path = req.files.file.path;
 
     // Recognize text of any language in any format
-    tesseract.process(path, ocr.getOptions, function(err, result) {
+    tesseract.process(path, ocr.getOptions(), function(err, text) {
         if(err) {
             console.error(err);
         } else {
@@ -55,11 +55,11 @@ var process = function(req, res) {
                 }
                 console.log('successfully deleted %s', path);
             });
-            async(function (res, result) {
+            async(function (res, text) {
                 var client;
                 try {
                         client = await(pool.connect());
-                        await(ocr.saveResult(res, client, options, result));
+                        await(ocr.saveResult(res, client, text));
                         await(client.release());
                     } catch (error) {
                         console.log('%s', error)
@@ -68,9 +68,9 @@ var process = function(req, res) {
                             await(client.release(true));
                         }
                 };
-            })(res, result);
-            console.log('result (text) %s', result);
-            res.json(200, result);
+            })(res, text);
+            console.log('result (text) %s', text);
+            res.json(200, text);
                 
         };
     });

@@ -67,7 +67,7 @@ OCR.prototype.getRegex = function(macroPattern) {
 
 };
 
-OCR.prototype.saveResult = function (res, client, options, result) {
+OCR.prototype.saveResult = function (res, client, result) {
     console.log('Before ocr.saveResult()');
 
     var resultJson = {"result": result};
@@ -91,7 +91,7 @@ OCR.prototype.saveResult = function (res, client, options, result) {
             console.log(`Match ${i}: ${match[i]}`);
         }*/
         console.log(`receiptItem.save: ${match[0]}`);
-        receiptItem.save(client,match[1], match[2], match[3]);
+        receiptItem.save(client, match[1], match[2], match[3]);
     }
 
 
