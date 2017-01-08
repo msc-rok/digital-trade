@@ -32,8 +32,8 @@ module.exports = function(app) {
         var client;
         async(function (res) {
             try {
-                client = myawait(pool.connect());
-                var dbResult = myawait(new Product().get(client, null));
+                client = await(pool.connect());
+                var dbResult = await(new Product().get(client, null));
                 res.json(JSON.stringify(dbResult));
                 if (client !== undefined) {
                     client.release(true);
