@@ -84,6 +84,11 @@ OCR.prototype.saveResult = function (res, client, result) {
 
     var regex = new RegExp(regexPattern,"g");
 
+    // INSERT INTO ocr.receipt(id, store, "user", amount, date) VALUES (?, ?, ?, ?, ?);
+    var receipt = await(client.query(tools.replaceSchema("INSERT INTO $$SCHEMANAME$$.receipt(store, 'user', amount, date) " +
+                        "VALUES ($1, $2, $3, $4) RETURNING id;"), [null, null, 1234, new Date()]));
+    console.log("receipt.id: ", receipt.rows[0].id);
+
     var match;
     while (match = regex.exec(result)) {
         var i;
@@ -91,7 +96,7 @@ OCR.prototype.saveResult = function (res, client, result) {
             console.log(`Match ${i}: ${match[i]}`);
         }*/
         console.log(`receiptItem.save: ${match[0]}`);
-        await(receiptItem.save(client, match[1], match[2], match[3]));
+        await(receiptItem.save(client, receipt.rows[0].id, match[1], match[2], match[3]));
     }
 
 
