@@ -7,7 +7,7 @@ const async = require('asyncawait/async');
 const await = require('asyncawait/await');
 
 const pool = require('../server/db');
-const ocr = require('../server/ocr');
+const ocr = require('../libs/ocr');
 
 var upload = multer(
         {
@@ -29,11 +29,6 @@ module.exports = function(app) {
 
 };
 
-var options = {
-    l: config("OCR_OPTIONS_LANG") || 'deu',
-    psm:  config("OCR_OPTIONS_PSM") || 6
-};
-
 /**
  * Following steps done under this functions.
  *
@@ -50,7 +45,7 @@ var process = function(req, res) {
     var path = req.files.file.path;
 
     // Recognize text of any language in any format
-    tesseract.process(path, options, function(err, result) {
+    tesseract.process(path, ocr.getOptions, function(err, result) {
         if(err) {
             console.error(err);
         } else {

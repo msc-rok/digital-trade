@@ -5,8 +5,15 @@
 const await = require('asyncawait/await');
 
 const tools = require('../server/tools');
+const receiptItem = require('../libs/classReceiptItem');
 
-var OCR = function () {};
+
+function OCR() {};
+
+var options = {
+    l: config("OCR_OPTIONS_LANG") || 'deu',
+    psm:  config("OCR_OPTIONS_PSM") || 6
+};
 
 const regexWhitespaces = '\\s+';
 
@@ -18,6 +25,10 @@ const regexGroups = {
     // (?P<name>.+?)\s(?<price>\d+\.\d+)\s(?<quantity>\d)
 
 };
+
+OCR.prototype.getOptions = function(){
+    return options;
+}
 
 OCR.prototype.getRegexOfGroup = function(group){
     var groupRegex;
@@ -76,9 +87,11 @@ OCR.prototype.saveResult = function (res, client, options, result) {
     var match;
     while (match = regex.exec(result)) {
         var i;
-        for (i = 0; i <= match.length - 1; i += 1) { 
+        /*for (i = 0; i <= match.length - 1; i += 1) { 
             console.log(`Match ${i}: ${match[i]}`);
-         }
+        }*/
+        console.log(`receiptItem.save: ${match[0]}`);
+        receiptItem.save(client,match[1], match[2], match[3]);
     }
 
 
