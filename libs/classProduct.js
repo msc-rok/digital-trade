@@ -33,7 +33,7 @@ Product.prototype.save = function (client) {
 }
 
 Product.prototype.findSimilar = function (client) {
-    console.log("product.findSimilar(): ", json.stringify(this));
+    console.log("product.findSimilar(): ", JSON.stringify(this));
 
     await(client.query("SELECT set_limit($1); ", [similaritylimit]));
     var productSimilar = await(client.query(tools.replaceSchema(
