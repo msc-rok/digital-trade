@@ -85,7 +85,7 @@ OCR.prototype.saveResult = function (res, client, result) {
     var regex = new RegExp(regexPattern,"g");
 
     // INSERT INTO ocr.receipt(id, store, "user", amount, date) VALUES (?, ?, ?, ?, ?);
-    var receipt = await(client.query(tools.replaceSchema("INSERT INTO $$SCHEMANAME$$.receipt(store, user, amount, date) " +
+    var receipt = await(client.query(tools.replaceSchema('INSERT INTO $$SCHEMANAME$$.receipt(store, "user", amount, date) ' +
                         "VALUES ($1, $2, $3, $4) RETURNING id;"), [null, null, 1234, new Date()]));
     console.log("receipt.id: ", receipt.rows[0].id);
 
