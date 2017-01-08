@@ -67,5 +67,19 @@ Product.prototype.add = function (client) {
     return productid;
 };
 
+Product.prototype.get = function (client, id) {
+    console.log("product.add(): ", JSON.stringify(this));
+
+    var condition = "1=1";
+    if (id){
+        condition = `id=${id}`;
+    }
+    var products = await(client.query(tools.replaceSchema("SELECT * FROM $$SCHEMANAME$$.product WHERE $1;"), [condition]));
+    
+    console.log("products: ", product.rows.lenghts);
+
+    return products;
+};
+
 
 module.exports = Product;

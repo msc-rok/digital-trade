@@ -8,6 +8,7 @@ const await = require('asyncawait/await');
 
 const pool = require('../server/db');
 const ocr = require('../libs/ocr');
+var Product = require('../libs/classProduct');
 
 var upload = multer(
         {
@@ -26,6 +27,25 @@ module.exports = function(app) {
     ));
 
     app.post("/api/ocr",  process);
+
+    app.get("/products", function (req, res) {
+        var client;
+        async(function (res) {
+            try {
+                client = myawait(pool.connect());
+                var dbResult = myawait(new Product().get(client, null));
+                res.json(JSON.stringify(dbResult));
+                if (client !== undefined) {
+                    client.release(true);
+                }
+            } catch (error) {
+                res.status(500).send();
+                if (client !== undefined) {
+                    client.release(true);
+                }
+            }
+        })(res);
+});
 
 };
 
