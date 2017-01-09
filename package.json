@@ -17,21 +17,22 @@
     "react-scripts": "0.1.0"
   },
   "dependencies": {
-    "asyncawait": "^1.0.6",
     "ajv": "^4.10.0",
+    "asyncawait": "^1.0.6",
     "bower": "^1.4.1",
     "express": "~3.4.6",
+    "multer": "^0.1.8",
+    "nconf": "^0.8.4",
+    "node-tesseract": "^0.2.7",
     "pg": "^6.1.1",
     "pg-pool": "^1.6.0",
     "pg-query-stream": "^1.0.0",
-    "multer": "^0.1.8",
-    "nconf": "^0.8.4",
-    "url": "~0.11.0",
-    "node-tesseract": "^0.2.7",
     "react": "^15.2.1",
     "react-dom": "^15.2.1",
     "react-dropzone": "^3.5.3",
-    "superagent": "^2.1.0"
+    "request": "^2.79.0",
+    "superagent": "^2.1.0",
+    "url": "~0.11.0"
   },
   "engines": {
     "node": "6.9.*"
