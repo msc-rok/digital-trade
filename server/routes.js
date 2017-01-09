@@ -12,6 +12,8 @@ var Product = require('../libs/classProduct');
 var Receipt = require('../libs/classReceipt');
 var ReceiptItem = require('../libs/classReceiptItem');
 
+var request = require('superagent');
+
 var upload = multer(
         {
             dest: './.tmp/',
@@ -135,6 +137,24 @@ var process = function(req, res) {
 
     var path = req.files.file.path;
     var result;
+
+    // ####################
+    const CLOUDINARY_UPLOAD_PRESET = 'o5dy6l5w';
+    const CLOUDINARY_UPLOAD_URL = 'https://api.cloudinary.com/v1_1/hdvhoxcbj/image/upload';
+    let uploadcloud = request.post(CLOUDINARY_UPLOAD_URL)
+                     .field('upload_preset', CLOUDINARY_UPLOAD_PRESET)
+                     .field('file', req.files.file);
+
+    uploadcloud.end((err, response) => {
+      if (err) {
+        console.error(err);
+      }
+
+      if (response.body.secure_url !== '') {
+        console.log(response.body.secure_url);
+      }
+
+      // ###########################
 
     // Recognize text of any language in any format
     tesseract.process(path, ocr.getOptions(), function(err, text) {
