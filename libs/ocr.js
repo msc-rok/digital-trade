@@ -81,7 +81,7 @@ OCR.prototype.getRegex = function(macroPattern) {
 OCR.prototype.saveResult = function (res, client, text, url) {
     console.log('Before ocr.saveResult()');
 
-    var receipt = new Receipt((ull, null, 1234, new Date));
+    var receipt = new Receipt((null, null, 1234, new Date));
     receipt.save(client);
 
     var resultJson = {text: text};
