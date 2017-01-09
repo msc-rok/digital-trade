@@ -8,12 +8,16 @@ const await = require('asyncawait/await');
 
 const pool = require('../server/db');
 const ocr = require('../libs/ocr');
+var OCRResult = require('../libs/classOCRResult')
 var Product = require('../libs/classProduct');
 var Receipt = require('../libs/classReceipt');
 var ReceiptItem = require('../libs/classReceiptItem');
 
 var superagent = require('superagent');
 var request = require('request')
+
+const CLOUDINARY_UPLOAD_PRESET = config("CLOUDINARY_UPLOAD_PRESET") ||'o5dy6l5w';
+const CLOUDINARY_UPLOAD_URL = config("CLOUDINARY_UPLOAD_URL") || 'https://api.cloudinary.com/v1_1/hdvhoxcbj/image/upload';
 
 var upload = multer(
         {
@@ -32,6 +36,9 @@ module.exports = function(app) {
     ));
 
     app.post("/api/ocr", process);
+
+    app.get("/api/ocrresults", ocrresults);
+    app.get("/api/ocrresults/:id", ocrresults);
 
     app.get("/api/receipts", receipts);
     app.get("/api/receipts/:id", receipts);
@@ -123,6 +130,26 @@ var receiptitems = function (req, res) {
         })(res);
     }
 
+    var ocrresults = function (req, res) {
+        var client;
+        async(function (res) {
+            try {
+                client = await(pool.connect());
+                var dbOCRResults = await(new OCRResult().get(client, req.params.id));
+                res.json({ocrresults: dbOCRResults});
+                if (client !== undefined) {
+                    client.release(true);
+                }
+            } catch (error) {
+                console.log(error);
+                res.status(500).send();
+                if (client !== undefined) {
+                    client.release(true);
+                }
+            }
+        })(res);
+    }
+
 /**
  * Following steps done under this functions.
  *
@@ -141,9 +168,6 @@ var process = function(req, res) {
     var result;
 
     // ####################
-
-    const CLOUDINARY_UPLOAD_PRESET = 'o5dy6l5w';
-    const CLOUDINARY_UPLOAD_URL = 'https://api.cloudinary.com/v1_1/hdvhoxcbj/image/upload';
     let uploadcloud = superagent.post(CLOUDINARY_UPLOAD_URL)
                      .field('upload_preset', CLOUDINARY_UPLOAD_PRESET)
                      .field('file', fs.createReadStream(filepathlocal));

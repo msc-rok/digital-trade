@@ -3,10 +3,11 @@
 
 //var async = require('asyncawait/async');
 const await = require('asyncawait/await');
-const util = require('util')
+const util = require('util');
 
 const tools = require('../server/tools');
 
+var OCRResult = require('../libs/classOCRResult')
 var Receipt = require('../libs/classReceipt');
 var ReceiptItem = require('../libs/classReceiptItem');
 var Product = require('../libs/classProduct');
@@ -80,13 +81,13 @@ OCR.prototype.getRegex = function(macroPattern) {
 OCR.prototype.saveResult = function (res, client, text, url) {
     console.log('Before ocr.saveResult()');
 
-    var resultJson = {text: text};
-    await(client.query(tools.replaceSchema("INSERT INTO $$SCHEMANAME$$.ocrresult(result, receipt, quality, psm, lang, url) " +
-                " VALUES ($1,$2,$3,$4,$5,$6)"), [JSON.stringify(resultJson), null, 1.0, options.psm, options.l, url]));
-
-    var receipt = new Receipt(null, null, 1234, new Date);
+    var receipt = new Receipt((ull, null, 1234, new Date));
     receipt.save(client);
-   
+
+    var resultJson = {text: text};
+    var ocrresult = new OCRResult(resultJson, receipt.getId(),1.0,options.psm, options.l, url)
+    ocrresult.save();
+
     var regexPattern = this.getRegex(regexMacroPattern);
     console.log('regexMacroPattern: ',regexMacroPattern)
     console.log('regexPattern: ',regexPattern)
