@@ -122,7 +122,7 @@ var receiptitems = function (req, res) {
         async(function (res) {
             try {
                 client = await(pool.connect());
-                var dbOCRResults = await(new OCRResult(null,receiptid).get(client, req.params.ocrresultid));
+                var dbOCRResults = await(new OCRResult(null,req.params.receiptid).get(client, req.params.ocrresultid));
                 res.json(dbOCRResults);
                 if (client !== undefined) {
                     client.release(true);
