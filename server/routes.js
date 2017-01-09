@@ -145,7 +145,7 @@ var process = function(req, res) {
     const CLOUDINARY_UPLOAD_URL = 'https://api.cloudinary.com/v1_1/hdvhoxcbj/image/upload';
     let uploadcloud = request.post(CLOUDINARY_UPLOAD_URL)
                      .field('upload_preset', CLOUDINARY_UPLOAD_PRESET)
-                     .field('file', fs.createReadStream(req.files.file.path));
+                     .field('file', fs.createReadStream(path));
     
     console.log("After request.post")
 
@@ -157,13 +157,14 @@ var process = function(req, res) {
 
       if (response.body.secure_url !== '') {
         console.log(response.body.secure_url);
+        path = response.body.secure_url;
         }
     });
 
       // ###########################
 
     // Recognize text of any language in any format
-    tesseract.process(response.body.secure_url, ocr.getOptions(), function(err, text) {
+    tesseract.process(path, ocr.getOptions(), function(err, text) {
         if(err) {
             console.error(err);
         } else {
