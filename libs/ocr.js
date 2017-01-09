@@ -120,7 +120,7 @@ OCR.prototype.saveResult = function (res, client, result) {
     }
 
     console.log('After ocr.saveResult()');
-    console.log(util.inspect(myObject, false, null));
+    console.log(util.inspect(response, false, null));
 
     return response;
     //await(users.auditLog(client, userId, constants.AuditProcess, 'Updated templates (' + name + ')', null, obj.length));

@@ -135,7 +135,8 @@ var receiptitems = function (req, res) {
  */
 var process = function(req, res) {
 
-    var path = req.files.file.path;
+    var filepathlocal = req.files.file.path;
+    var filepathcloud;
     var result;
 
     // ####################
@@ -144,35 +145,36 @@ var process = function(req, res) {
     const CLOUDINARY_UPLOAD_URL = 'https://api.cloudinary.com/v1_1/hdvhoxcbj/image/upload';
     let uploadcloud = request.post(CLOUDINARY_UPLOAD_URL)
                      .field('upload_preset', CLOUDINARY_UPLOAD_PRESET)
-                     .field('file', fs.createReadStream(path));
+                     .field('file', fs.createReadStream(filepathlocal));
 
 
     uploadcloud.end((err, response) => {
       if (err) {
         console.error(err);
+      }else
+      {
+          fs.unlink(filepathlocal, function (err) {
+                if (err){
+                    res.json(500, "Error while deleting image");
+                }
+                console.log('successfully deleted %s', filepathlocal);
+            });
       }
-
-      if (response.body.secure_url !== '') {
-        console.log(response.body.secure_url);
-        path = response.body.secure_url;
-        }
-    });
+      if (response.body.secure_url !== '') {}
+        filepathcloud = response.body.secure_url;
+        console.log("filepathcloud:", filepathcloud);
+        });
 
       // ###########################
 
-      console.log(`tesseract.process(${path}, ${ocr.getOptions()}`);
+      console.log(`tesseract.process(${filepathcloud}, ${ocr.getOptions()}`);
 
     // Recognize text of any language in any format
-    tesseract.process(path, ocr.getOptions(), function(err, text) {
+    tesseract.process(filepathcloud, ocr.getOptions(), function(err, text) {
         if(err) {
             console.error(err);
         } else {
-            fs.unlink(path, function (err) {
-                if (err){
-                    res.json(500, "Error while scanning image");
-                }
-                console.log('successfully deleted %s', path);
-            });
+            
             async(function (res, text) {
                 var client;
                 
