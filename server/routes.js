@@ -42,17 +42,16 @@ module.exports = function(app) {
 
     app.get("/api/receipts", receipts);
     app.get("/api/receipts/:receiptid", receipts);
-    app.get("/api/receipts/:receiptid/ocrresult", ocrresults);
+    app.get("/api/receipts/:receiptid/ocrresults", ocrresults);
     app.get("/api/receipts/:receiptid/receiptitems", receiptitems);
-
-    app.get("/api/products", products);
-    app.get("/api/products/:productid", products);
-    app.get("/api/products/:productname", products);
-    app.get("/api/products/:productid/receiptitems", receiptitems);
 
     app.get("/api/receiptitems", receiptitems);
     app.get("/api/receiptitems/:receiptitemid", receiptitems);
 
+    app.get("/api/products", products);
+    app.get("/api/products/:productid", products);
+    app.get("/api/products/:productid/receiptitems", receiptitems);
+    
 };
 
 var products = function (req, res) {
@@ -60,7 +59,7 @@ var products = function (req, res) {
         async(function (res) {
             try {
                 client = await(pool.connect());
-                var dbProducts = await(new Product(req.params.productname).get(client, req.params.productid));
+                var dbProducts = await(new Product().get(client, req.params.productid));
                 res.json({products: dbProducts});
 
                 if (client !== undefined) {
