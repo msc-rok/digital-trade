@@ -2,6 +2,7 @@
 "use strict";
 
 const await = require('asyncawait/await');
+const util = require('util');
 
 //Project references
 const tools = require('../server/tools');

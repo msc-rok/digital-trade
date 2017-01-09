@@ -108,7 +108,7 @@ OCR.prototype.saveResult = function (res, client, text, url) {
         product = new Product(match[regexGroupIndex.name]);
         product.save(client);
         products.push(product);
-
+        
         receiptItem = new ReceiptItem(receipt.getId(), product.getId(), match[regexGroupIndex.price], match[regexGroupIndex.quantity])
         receiptItem.save(client);
         receiptItems.push(receiptItem);
