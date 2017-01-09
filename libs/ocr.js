@@ -81,12 +81,12 @@ OCR.prototype.getRegex = function(macroPattern) {
 OCR.prototype.saveResult = function (res, client, text, url) {
     console.log('Before ocr.saveResult()');
 
-    var receipt = new Receipt((null, null, 1234, new Date));
+    var receipt = new Receipt(null, null, 1234, new Date());
     receipt.save(client);
 
     var resultJson = {text: text};
     var ocrresult = new OCRResult(resultJson, receipt.getId(),1.0,options.psm, options.l, url)
-    ocrresult.save();
+    ocrresult.save(client);
 
     var regexPattern = this.getRegex(regexMacroPattern);
     console.log('regexMacroPattern: ',regexMacroPattern)
