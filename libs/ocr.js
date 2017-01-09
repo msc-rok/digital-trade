@@ -77,12 +77,12 @@ OCR.prototype.getRegex = function(macroPattern) {
 
 };
 
-OCR.prototype.saveResult = function (res, client, result) {
+OCR.prototype.saveResult = function (res, client, text, url) {
     console.log('Before ocr.saveResult()');
 
-    var resultJson = {"result": result};
-    await(client.query(tools.replaceSchema("INSERT INTO $$SCHEMANAME$$.ocrresult(result, receipt, quality, psm, lang, img) " +
-                " VALUES ($1,$2,$3,$4,$5,$6)"), [JSON.stringify(resultJson), null, 1.0, options.psm, options.l, null]));
+    var resultJson = {text: text};
+    await(client.query(tools.replaceSchema("INSERT INTO $$SCHEMANAME$$.ocrresult(result, receipt, quality, psm, lang, url) " +
+                " VALUES ($1,$2,$3,$4,$5,$6)"), [JSON.stringify(resultJson), null, 1.0, options.psm, options.l, url]));
 
     var receipt = new Receipt(null, null, 1234, new Date);
     receipt.save(client);
@@ -98,7 +98,7 @@ OCR.prototype.saveResult = function (res, client, result) {
     var receiptItem;
     var receiptItems = [];
     var match;
-    while (match = regex.exec(result)) {
+    while (match = regex.exec(text)) {
         /*var i;
         for (i = 0; i <= match.length - 1; i += 1) { 
             console.log(`Match ${i}: ${match[i]}`);
@@ -119,8 +119,7 @@ OCR.prototype.saveResult = function (res, client, result) {
         receiptitems: receiptItems
     }
 
-    console.log('After ocr.saveResult()');
-    console.log(util.inspect(response, false, null));
+    console.log(`After ocr.saveResult(${util.inspect(response, false, null)})`);
 
     return response;
     //await(users.auditLog(client, userId, constants.AuditProcess, 'Updated templates (' + name + ')', null, obj.length));

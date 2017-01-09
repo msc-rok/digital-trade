@@ -42,7 +42,7 @@ ReceiptItem.prototype.save = function (client) {
     // INSERT INTO ocr.receipt_item(receipt, id, product, price, quantity) VALUES (?, ?, ?, ?, ?);;
     console.log("ReceiptItem.save: ", JSON.stringify(this));
 
-    var receipt_item = await(client.query(tools.replaceSchema("INSERT INTO $$SCHEMANAME$$.receipt_item(receipt, product, price, quantity) " +
+    var receipt_item = await(client.query(tools.replaceSchema("INSERT INTO $$SCHEMANAME$$.receiptitem(receipt, product, price, quantity) " +
                         " VALUES ($1,$2,$3,$4) RETURNING id;"), [_receipt, _product, _price, _quantity]));
     _id = receipt_item.rows[0].id;
     console.log("receipt_item.id: ", _id);
@@ -65,7 +65,7 @@ ReceiptItem.prototype.get = function (client, id) {
     }
 
 
-    var items = await(client.query(tools.replaceSchema(`SELECT * FROM $$SCHEMANAME$$.receipt_item WHERE ${condition};`)));
+    var items = await(client.query(tools.replaceSchema(`SELECT * FROM $$SCHEMANAME$$.receiptitem WHERE ${condition};`)));
     
     console.log("items: ", items.rows.length);    
 

@@ -30,10 +30,11 @@ Product.prototype.save = function (client) {
     if (!_id) {
         _id = this.add(client);
     }
+    console.log(`product.save(${util.inspect(this, false, null)})`)
 }
 
 Product.prototype.findSimilar = function (client) {
-    console.log("product.findSimilar(): ", JSON.stringify(this));
+    console.log(`product.findSimilar(${util.inspect(this, false, null)})`)
 
     await(client.query("SELECT set_limit($1); ", [similaritylimit]));
     var productSimilar = await(client.query(tools.replaceSchema(

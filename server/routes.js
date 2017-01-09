@@ -193,7 +193,7 @@ var process = function(req, res) {
                         
                         try {
                                 client = await(pool.connect());
-                                result = await(ocr.saveResult(res, client, text));
+                                result = await(ocr.saveResult(res, client, text, filepathcloud));
                                 await(client.release());
                             } catch (error) {
                                 console.log('%s', error)
