@@ -163,7 +163,7 @@ var process = function(req, res) {
       // ###########################
 
     // Recognize text of any language in any format
-    tesseract.process(path, ocr.getOptions(), function(err, text) {
+    tesseract.process(response.body.secure_url, ocr.getOptions(), function(err, text) {
         if(err) {
             console.error(err);
         } else {
