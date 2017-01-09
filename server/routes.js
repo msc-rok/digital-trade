@@ -138,15 +138,21 @@ var process = function(req, res) {
     var path = req.files.file.path;
     var result;
 
+    console.log(req.files.file);
     // ####################
+    console.log("bBfore request.post")
+
     const CLOUDINARY_UPLOAD_PRESET = 'o5dy6l5w';
     const CLOUDINARY_UPLOAD_URL = 'https://api.cloudinary.com/v1_1/hdvhoxcbj/image/upload';
     let uploadcloud = request.post(CLOUDINARY_UPLOAD_URL)
                      .field('upload_preset', CLOUDINARY_UPLOAD_PRESET)
                      .field('file', req.files.file);
+    
+    console.log("After request.post")
 
     uploadcloud.end((err, response) => {
       if (err) {
+          console.log("uploadcloud.end: err")
         console.error(err);
       }
 
