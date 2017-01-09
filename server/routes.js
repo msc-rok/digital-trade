@@ -12,7 +12,8 @@ var Product = require('../libs/classProduct');
 var Receipt = require('../libs/classReceipt');
 var ReceiptItem = require('../libs/classReceiptItem');
 
-var request = require('superagent');
+var superagent = require('superagent');
+var request = require('request')
 
 var upload = multer(
         {
@@ -143,7 +144,7 @@ var process = function(req, res) {
 
     const CLOUDINARY_UPLOAD_PRESET = 'o5dy6l5w';
     const CLOUDINARY_UPLOAD_URL = 'https://api.cloudinary.com/v1_1/hdvhoxcbj/image/upload';
-    let uploadcloud = request.post(CLOUDINARY_UPLOAD_URL)
+    let uploadcloud = superagent.post(CLOUDINARY_UPLOAD_URL)
                      .field('upload_preset', CLOUDINARY_UPLOAD_PRESET)
                      .field('file', fs.createReadStream(filepathlocal));
 
@@ -160,43 +161,57 @@ var process = function(req, res) {
                 console.log('successfully deleted %s', filepathlocal);
             });
       }
-      if (response.body.secure_url !== '') {}
+
+      if (response.body.secure_url !== '') {
         filepathcloud = response.body.secure_url;
         console.log("filepathcloud:", filepathcloud);
 
         // ###########################
 
-      console.log(`tesseract.process(${filepathcloud}, ${ocr.getOptions()}`);
+        var writeFile = fs.createWriteStream(filepathlocal)
 
-        // Recognize text of any language in any format
-        tesseract.process(filepathcloud, ocr.getOptions(), function(err, text) {
-            if(err) {
-                console.error(err);
-            } else {
-                
-                async(function (res, text) {
-                    var client;
-                    
-                    try {
-                            client = await(pool.connect());
-                            result = await(ocr.saveResult(res, client, text));
-                            await(client.release());
-                        } catch (error) {
-                            console.log('%s', error)
-                            res.json(500, "Error while accessing db");
-                            if (client !== undefined) {
-                                await(client.release(true));
-                            }
+        request(filepathcloud).pipe(writeFile).on('close', function() {
+            console.log(url, 'saved to', filepathlocal)
+            
+            console.log(`tesseract.process(${filepathlocal}, ${ocr.getOptions()}`);
+
+            // Recognize text of any language in any format
+            tesseract.process(filepathlocal, ocr.getOptions(), function(err, text) {
+                if(err) {
+                    console.error(err);
+                } else {
+
+                    fs.unlink(filepathlocal, function (err) {
+                        if (err){
+                            res.json(500, "Error while deleting image");
+                        }
+                        console.log('successfully deleted %s', filepathlocal);
+                    });
+
+                    async(function (res, text) {
+                        var client;
+                        
+                        try {
+                                client = await(pool.connect());
+                                result = await(ocr.saveResult(res, client, text));
+                                await(client.release());
+                            } catch (error) {
+                                console.log('%s', error)
+                                res.json(500, "Error while accessing db");
+                                if (client !== undefined) {
+                                    await(client.release(true));
+                                }
+                        };
+                    })(res, text);
+                    console.log('result (text) %s', text);
+                    res.json(200, text);
+                        
                     };
-                })(res, text);
-                console.log('result (text) %s', text);
-                res.json(200, text);
-                    
-            };
-        });
+                });
+            
+            });
 
-        });
+        };      
 
-      
-
-};
+    }
+    )};
