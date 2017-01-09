@@ -138,7 +138,6 @@ var process = function(req, res) {
     var path = req.files.file.path;
     var result;
 
-    console.log(req.files.file);
     // ####################
     console.log("bBfore request.post")
 
@@ -146,7 +145,7 @@ var process = function(req, res) {
     const CLOUDINARY_UPLOAD_URL = 'https://api.cloudinary.com/v1_1/hdvhoxcbj/image/upload';
     let uploadcloud = request.post(CLOUDINARY_UPLOAD_URL)
                      .field('upload_preset', CLOUDINARY_UPLOAD_PRESET)
-                     .field('file', req.files.file);
+                     .field('file', fs.createReadStream(req.files.file.path));
     
     console.log("After request.post")
 
