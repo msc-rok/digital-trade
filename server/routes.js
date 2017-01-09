@@ -171,7 +171,7 @@ var process = function(req, res) {
         var writeFile = fs.createWriteStream(filepathlocal)
 
         request(filepathcloud).pipe(writeFile).on('close', function() {
-            console.log(url, 'saved to', filepathlocal)
+            console.log(filepathcloud, 'saved to', filepathlocal)
             
             console.log(`tesseract.process(${filepathlocal}, ${ocr.getOptions()}`);
 
