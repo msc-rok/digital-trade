@@ -3,6 +3,7 @@
 
 //var async = require('asyncawait/async');
 const await = require('asyncawait/await');
+const util = require('util')
 
 const tools = require('../server/tools');
 
@@ -119,8 +120,7 @@ OCR.prototype.saveResult = function (res, client, result) {
     }
 
     console.log('After ocr.saveResult()');
-    console.log(response);
-    console.log(JSON.stringify(response));
+    console.log(util.inspect(myObject, false, null));
 
     return response;
     //await(users.auditLog(client, userId, constants.AuditProcess, 'Updated templates (' + name + ')', null, obj.length));
