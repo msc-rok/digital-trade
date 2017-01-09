@@ -163,37 +163,40 @@ var process = function(req, res) {
       if (response.body.secure_url !== '') {}
         filepathcloud = response.body.secure_url;
         console.log("filepathcloud:", filepathcloud);
-        });
 
-      // ###########################
+        // ###########################
 
       console.log(`tesseract.process(${filepathcloud}, ${ocr.getOptions()}`);
 
-    // Recognize text of any language in any format
-    tesseract.process(filepathcloud, ocr.getOptions(), function(err, text) {
-        if(err) {
-            console.error(err);
-        } else {
-            
-            async(function (res, text) {
-                var client;
+        // Recognize text of any language in any format
+        tesseract.process(filepathcloud, ocr.getOptions(), function(err, text) {
+            if(err) {
+                console.error(err);
+            } else {
                 
-                try {
-                        client = await(pool.connect());
-                        result = await(ocr.saveResult(res, client, text));
-                        await(client.release());
-                    } catch (error) {
-                        console.log('%s', error)
-                        res.json(500, "Error while accessing db");
-                        if (client !== undefined) {
-                            await(client.release(true));
-                        }
-                };
-            })(res, text);
-            console.log('result (text) %s', text);
-            res.json(200, text);
-                
-        };
-    });
+                async(function (res, text) {
+                    var client;
+                    
+                    try {
+                            client = await(pool.connect());
+                            result = await(ocr.saveResult(res, client, text));
+                            await(client.release());
+                        } catch (error) {
+                            console.log('%s', error)
+                            res.json(500, "Error while accessing db");
+                            if (client !== undefined) {
+                                await(client.release(true));
+                            }
+                    };
+                })(res, text);
+                console.log('result (text) %s', text);
+                res.json(200, text);
+                    
+            };
+        });
+
+        });
+
+      
 
 };
