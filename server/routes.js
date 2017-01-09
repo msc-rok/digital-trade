@@ -152,7 +152,8 @@ var process = function(req, res) {
 
       if (response.body.secure_url !== '') {
         console.log(response.body.secure_url);
-      }
+        }
+    });
 
       // ###########################
 
