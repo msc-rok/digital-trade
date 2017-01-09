@@ -65,14 +65,17 @@ OCRResult.prototype.get = function (client, id) {
 
     var condition = `1=1`;
     if (id){
-        condition = `id=${id}`;
+        condition += ` AND id=${id}`;
+    }
+    if (_receipt){
+        condition += ` AND receipt=${_receipt}`;
     }
     //select array_to_json(array_agg(row_to_json(t))) as measures from (select * from $$SCHEMANAME$$.templatesmeasures) t;"
     var OCRResults = await(client.query(tools.replaceSchema(`SELECT * FROM $$SCHEMANAME$$.ocrresult WHERE ${condition};`)));
     
     console.log("OCRResults: ", OCRResults.rows.length);    
 
-    return OCRResults.rows;
+    return {ocrresults: OCRResults.rows};
 };
 
 

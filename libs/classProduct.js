@@ -74,7 +74,10 @@ Product.prototype.get = function (client, id) {
 
     var condition = `1=1`;
     if (id){
-        condition = `id=${id}`;
+        condition += ` AND id=${id}`;
+    }
+    if (_name){
+        condition += ` AND name=${_name}`;
     }
     //select array_to_json(array_agg(row_to_json(t))) as measures from (select * from $$SCHEMANAME$$.templatesmeasures) t;"
     var products = await(client.query(tools.replaceSchema(`SELECT * FROM $$SCHEMANAME$$.product WHERE ${condition};`)));

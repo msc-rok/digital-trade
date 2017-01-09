@@ -38,16 +38,20 @@ module.exports = function(app) {
     app.post("/api/ocr", process);
 
     app.get("/api/ocrresults", ocrresults);
-    app.get("/api/ocrresults/:id", ocrresults);
+    app.get("/api/ocrresults/:ocrresultid", ocrresults);
 
     app.get("/api/receipts", receipts);
-    app.get("/api/receipts/:id", receipts);
+    app.get("/api/receipts/:receiptid", receipts);
+    app.get("/api/receipts/:receiptid/ocrresult", ocrresults);
+    app.get("/api/receipts/:receiptid/receiptitems", receiptitems);
 
     app.get("/api/products", products);
-    app.get("/api/products/:id", products);
+    app.get("/api/products/:productid", products);
+    app.get("/api/products/:productname", products);
+    app.get("/api/products/:productid/receiptitems", receiptitems);
 
     app.get("/api/receiptitems", receiptitems);
-    app.get("/api/receiptitems/:id", receiptitems);
+    app.get("/api/receiptitems/:receiptitemid", receiptitems);
 
 };
 
@@ -56,18 +60,8 @@ var products = function (req, res) {
         async(function (res) {
             try {
                 client = await(pool.connect());
-                var dbProducts = await(new Product().get(client, req.params.id));
-
-                var dbReceiptItems;
-                if (req.params.id){
-                    dbReceiptItems = await(new ReceiptItem(null,req.params.id,null,null).get(client));
-                    console.log(JSON.stringify(dbReceiptItems));
-                }
-
-                res.json({
-                        products: dbProducts,
-                        receiptitems: dbReceiptItems
-                    });
+                var dbProducts = await(new Product(req.params.productname).get(client, req.params.productid));
+                res.json({products: dbProducts});
 
                 if (client !== undefined) {
                     client.release(true);
@@ -87,16 +81,9 @@ var receipts = function (req, res) {
         async(function (res) {
             try {
                 client = await(pool.connect());
-                var dbReceipts = await(new Receipt().get(client, req.params.id));
+                var dbReceipts = await(new Receipt().get(client, req.params.receiptid));
 
-                var dbReceiptItems;
-                if (req.params.id){
-                    dbReceiptItems = await(new ReceiptItem(req.params.id,null,null,null).get(client));
-                    console.log(JSON.stringify(dbReceiptItems));
-                }
-
-                res.json({receipts: dbReceipts,
-                    receiptitems: dbReceiptItems});
+                res.json({receipts: dbReceipts});
                 if (client !== undefined) {
                     client.release(true);
                 }
@@ -115,7 +102,7 @@ var receiptitems = function (req, res) {
         async(function (res) {
             try {
                 client = await(pool.connect());
-                var dbReceiptItems = await(new ReceiptItem().get(client, req.params.id));
+                var dbReceiptItems = await(new ReceiptItem(req.params.receiptid,req.params.productid,null, null).get(client, req.params.receiptitemid));
                 res.json({receiptitems: dbReceiptItems});
                 if (client !== undefined) {
                     client.release(true);
@@ -135,8 +122,8 @@ var receiptitems = function (req, res) {
         async(function (res) {
             try {
                 client = await(pool.connect());
-                var dbOCRResults = await(new OCRResult().get(client, req.params.id));
-                res.json({ocrresults: dbOCRResults});
+                var dbOCRResults = await(new OCRResult(null,receiptid).get(client, req.params.ocrresultid));
+                res.json(dbOCRResults);
                 if (client !== undefined) {
                     client.release(true);
                 }
@@ -162,6 +149,8 @@ var receiptitems = function (req, res) {
  * @param res
  */
 var process = function(req, res) {
+
+    console.log(req)
 
     var filepathlocal = req.files.file.path;
     var filepathcloud;
