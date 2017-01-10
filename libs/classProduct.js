@@ -10,26 +10,21 @@ const constants = require('../libs/constants');
 
 const similaritylimit = config("DATABASE_SIMILARITY_LIMIT") || 0.6
 
-var _name;
 var _id;
 
 //noinspection JSLint
 function Product (name) {
-    _name = name;
+    this.name = name;
 }
 
 Product.prototype.getId = function(){
     return _id;
 }
 
-Product.prototype.getName = function(){
-    return _name;
-}
-
 Product.prototype.save = function (client) {
-    _id = this.findSimilar(client);
-    if (!_id) {
-        _id = this.add(client);
+    this._id = this.findSimilar(client);
+    if (!this._id) {
+        this._id = this.add(client);
     }
     console.log(`product.save(${util.inspect(this, false, null)})`)
 }
@@ -42,7 +37,7 @@ Product.prototype.findSimilar = function (client) {
         "SELECT similarity(p.name, $1) AS sim, p.id, p.name " +
         "FROM   $$SCHEMANAME$$.product p "+
         "WHERE  p.name % $1 " +
-        "ORDER  BY sim DESC LIMIT 1;"), [_name]));
+        "ORDER  BY sim DESC LIMIT 1;"), [name]));
     
     var productid;
     if (productSimilar.rows.length > 0){
@@ -76,8 +71,8 @@ Product.prototype.get = function (client, id) {
     if (id){
         condition += ` AND id=${id}`;
     }
-    if (_name){
-        condition += ` AND name=${_name}`;
+    if (this.name){
+        condition += ` AND name=${this.name}`;
     }
     //select array_to_json(array_agg(row_to_json(t))) as measures from (select * from $$SCHEMANAME$$.templatesmeasures) t;"
     var products = await(client.query(tools.replaceSchema(`SELECT * FROM $$SCHEMANAME$$.product WHERE ${condition};`)));

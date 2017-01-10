@@ -28,7 +28,7 @@ const regexGroups = {
     name : '.+?',
     price: '\\d+\\.\\d+',
     quantity: '\\d',
-    EAN: '\\d+'
+    ean: '\\d+'
     // (?P<name>.+?)\s(?<price>\d+\.\d+)\s(?<quantity>\d)
 
 };
@@ -57,6 +57,9 @@ OCR.prototype.getRegexOfGroup = function(group, index){
             groupRegex = regexGroups.ean;
             regexGroupIndex.ean = index;
             break;
+        default:
+            groupRegex = group;
+        break;
     }
     // (?P<name>.+?)\s+(?P<price>\d+\.\d+)\s+(?P<quantity>\d)
     // (?P<name>.+?)\s+(?P<price>\d+\.\d+)\s(?<quantity>\d)

@@ -51,7 +51,7 @@ module.exports = function(app) {
     app.get("/api/products", products);
     app.get("/api/products/:productid", products);
     app.get("/api/products/:productid/receiptitems", receiptitems);
-    
+
 };
 
 var products = function (req, res) {
@@ -149,7 +149,7 @@ var receiptitems = function (req, res) {
  */
 var process = function(req, res) {
 
-    console.log(req)
+    //console.log(req)
 
     var filepathlocal = req.files.file.path;
     var filepathcloud;
