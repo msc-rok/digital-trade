@@ -212,6 +212,9 @@ var process = function (req, res) {
 
                                     result = ocr.process(client, text, filepathcloud);
                                     await(client.release());
+
+                                    console.log('result (text) %s', text);
+                                    res.json(200, result);
                                 } catch (error) {
                                     console.log('%s', error)
                                     res.json(500, "Error while accessing db");
@@ -221,8 +224,7 @@ var process = function (req, res) {
                                 };
                             })(res, ocr, text);
 
-                            console.log('result (text) %s', text);
-                            res.json(200, result);
+                            
                         });
                     };
 
