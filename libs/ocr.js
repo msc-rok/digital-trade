@@ -43,7 +43,7 @@ const regexGroups = {
 
 OCR.prototype.getRegexOfGroup = function(group, index){
     var groupRegex;
-    switch (group)
+    switch (group.toLowerCase())
     {
         case "name":
             groupRegex = regexGroups.name;
@@ -75,7 +75,7 @@ OCR.prototype.getRegex = function(macroPattern) {
     var groups = macroPattern.split('$');
     var i;
     for (i = 1; i <= groups.length - 1; i += 1) { 
-        regex += this.getRegexOfGroup(groups[i].toLowerCase(), i);
+        regex += this.getRegexOfGroup(groups[i], i);
         if (i < groups.length-1){
              regex += _regexWhitespaces;
         }
