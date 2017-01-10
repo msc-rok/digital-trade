@@ -179,7 +179,7 @@ var process = function (req, res) {
 
             // ###########################
 
-            var writeFile = fs.createWriteStream(filepathlocal)
+            var writeFile = fs.createWriteStream(filepathlocal);
 
             request(filepathcloud).pipe(writeFile).on('close', function () {
                 console.log(filepathcloud, 'saved to', filepathlocal)
@@ -192,6 +192,7 @@ var process = function (req, res) {
                 tesseract.process(filepathlocal, ocr.options, function (err, text) {
                     if (err) {
                         console.error(err);
+                        res.json(500, "Error while processing tesseract");
                     } else {
 
                         fs.unlink(filepathlocal, function (err) {
@@ -199,31 +200,33 @@ var process = function (req, res) {
                                 res.json(500, "Error while deleting image");
                             }
                             console.log('successfully deleted %s', filepathlocal);
+
+                            async(function (res, ocr, text) {
+                                var client;
+                                try {
+                                    client = await(pool.connect());
+
+                                    var receipt = await(new Receipt(null, null, 0, new Date()));
+                                    await(receipt.save(client));
+                                    ocr.receipt = receipt.getId();
+
+                                    result = ocr.process(client, text, filepathcloud);
+                                    await(client.release());
+                                } catch (error) {
+                                    console.log('%s', error)
+                                    res.json(500, "Error while accessing db");
+                                    if (client !== undefined) {
+                                        await(client.release(true));
+                                    }
+                                };
+                            })(res, ocr, text);
+
+                            console.log('result (text) %s', text);
+                            res.json(200, result);
                         });
-
-                        async(function (res, ocr, text) {
-                            var client;
-                            try {
-                                client = await(pool.connect());
-                                
-                                var receipt = await(new Receipt(null, null, 0, new Date()));
-                                await(receipt.save(client));
-                                ocr.receipt = receipt.getId();
-
-                                result = ocr.process(client, text, filepathcloud);
-                                await(client.release());
-                            } catch (error) {
-                                console.log('%s', error)
-                                res.json(500, "Error while accessing db");
-                                if (client !== undefined) {
-                                    await(client.release(true));
-                                }
-                            };
-                        })(res, ocr, text);
                     };
 
-                    console.log('result (text) %s', text);
-                    res.json(200, result);
+
 
                 });
 
