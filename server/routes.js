@@ -183,34 +183,16 @@ var process = function (req, res) {
 
             request(filepathcloud).pipe(writeFile).on('close', function () {
                 console.log(filepathcloud, 'saved to', filepathlocal)
-                var text;
-                async(function (res, text) {
+                
+                var ocr;
+
+                async(function (res) {
                     var client;
                     try {
                         client = await(pool.connect());
-
                         var receipt = await(new Receipt(null, null, 0, new Date()));
                         await(receipt.save(client));
-                        var ocr = new OCR(receipt.getId());
-
-                        console.log(`tesseract.process(${filepathlocal}, ${ocr.options}`);
-
-                        // Recognize text of any language in any format
-                        tesseract.process(filepathlocal, ocr.options, function (err, text) {
-                            if (err) {
-                                console.error(err);
-                            } else {
-
-                                fs.unlink(filepathlocal, function (err) {
-                                    if (err) {
-                                        res.json(500, "Error while deleting image");
-                                    }
-                                    console.log('successfully deleted %s', filepathlocal);
-                                });
-
-                                result = ocr.process(client, text, filepathcloud);
-                            }
-                        });
+                        ocr = new OCR(receipt.getId());
                         await(client.release());
                     } catch (error) {
                         console.log('%s', error)
@@ -219,14 +201,46 @@ var process = function (req, res) {
                             await(client.release(true));
                         }
                     };
-                })(res, text);
-                console.log('result (text) %s', text);
-                res.json(200, result);
+                })(res);
 
-            });
+                console.log(`tesseract.process(${filepathlocal}, ${ocr.options}`);
 
-        };
+                // Recognize text of any language in any format
+                tesseract.process(filepathlocal, ocr.options, function (err, text) {
+                    if (err) {
+                        console.error(err);
+                    } else {
 
-    }
+                        fs.unlink(filepathlocal, function (err) {
+                            if (err) {
+                                res.json(500, "Error while deleting image");
+                            }
+                            console.log('successfully deleted %s', filepathlocal);
+                        });
+
+                        async(function (res, text) {
+                            var client;
+                            try {
+                                client = await(pool.connect());
+                                result = ocr.process(client, text, filepathcloud);
+                                await(client.release());
+                            } catch (error) {
+                                console.log('%s', error)
+                                res.json(500, "Error while accessing db");
+                                if (client !== undefined) {
+                                    await(client.release(true));
+                                }
+                            };
+                        })(res, text);
+                    };
+
+                    console.log('result (text) %s', text);
+                    res.json(200, result);
+
+                });
+
+            };
+
+        }
     )
 };
