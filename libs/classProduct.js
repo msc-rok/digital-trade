@@ -18,7 +18,7 @@ function Product (name) {
 }
 
 Product.prototype.getId = function(){
-    return _id;
+    return this._id;
 }
 
 Product.prototype.save = function (client) {
@@ -26,7 +26,7 @@ Product.prototype.save = function (client) {
     if (!this._id) {
         this._id = this.add(client);
     }
-    console.log(`product.save(${util.inspect(this, false, null)})`)
+    console.log(`product.save(${JSON.stringify(this)})`);
 }
 
 Product.prototype.findSimilar = function (client) {
@@ -37,7 +37,7 @@ Product.prototype.findSimilar = function (client) {
         "SELECT similarity(p.name, $1) AS sim, p.id, p.name " +
         "FROM   $$SCHEMANAME$$.product p "+
         "WHERE  p.name % $1 " +
-        "ORDER  BY sim DESC LIMIT 1;"), [name]));
+        "ORDER  BY sim DESC LIMIT 1;"), [this.name]));
     
     var productid;
     if (productSimilar.rows.length > 0){
@@ -56,7 +56,7 @@ Product.prototype.add = function (client) {
 
     // INSERT INTO ocr.product(id, name) VALUES (?, ?);
     var product = await(client.query(tools.replaceSchema("INSERT INTO $$SCHEMANAME$$.product(name) " +
-                        "VALUES ($1) RETURNING id;"), [_name]));
+                        "VALUES ($1) RETURNING id;"), [this.name]));
     var productid = product.rows[0].id;
     
     console.log("product.id: ", productid);

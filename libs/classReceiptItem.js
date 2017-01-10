@@ -9,33 +9,17 @@ const tools = require('../server/tools');
 const constants = require('../libs/constants');
 
 var _id;
-var _receipt;
-var _product;
-var _price;
-var _quantity;
 
 //noinspection JSLint
 function ReceiptItem (receipt, product, price, quantity) {
-    _receipt = receipt;
-    _product = product;
-    _price = price;
-    _quantity = quantity;
+    this.receipt = receipt;
+    this.product = product;
+    this.price = price;
+    this.quantity = quantity;
 };
 
 ReceiptItem.prototype.getId = function(){
-    return _id;
-}
-ReceiptItem.prototype.getReceipt = function(){
-    return _receipt;
-}
-ReceiptItem.prototype.getProduct = function(){
-    return _product;
-}
-ReceiptItem.prototype.getPrice = function(){
-    return _price;
-}
-ReceiptItem.prototype.getQuantity = function(){
-    return _quantity;
+    return this._id;
 }
 
 
@@ -44,11 +28,11 @@ ReceiptItem.prototype.save = function (client) {
     console.log("ReceiptItem.save: ", JSON.stringify(this));
 
     var receipt_item = await(client.query(tools.replaceSchema("INSERT INTO $$SCHEMANAME$$.receiptitem(receipt, product, price, quantity) " +
-                        " VALUES ($1,$2,$3,$4) RETURNING id;"), [_receipt, _product, _price, _quantity]));
-    _id = receipt_item.rows[0].id;
-    console.log("receipt_item.id: ", _id);
+                        " VALUES ($1,$2,$3,$4) RETURNING id;"), [this.receipt, this.product, this.price, this.quantity]));
+    this._id = receipt_item.rows[0].id;
+    console.log("receipt_item.id: ", this._id);
     
-    return _id;
+    return this._id;
 };
 
 ReceiptItem.prototype.get = function (client, id) {
@@ -58,11 +42,11 @@ ReceiptItem.prototype.get = function (client, id) {
     if (id){
         condition += ` AND id=${id}`;
     }
-    if (_product){
-        condition += ` AND product=${_product}`;
+    if (this.product){
+        condition += ` AND product=${this.product}`;
     }
-   if (_receipt){
-        condition += ` AND receipt=${_receipt}`;
+   if (this.receipt){
+        condition += ` AND receipt=${this.receipt}`;
     }
 
 

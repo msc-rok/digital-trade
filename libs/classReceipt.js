@@ -9,34 +9,17 @@ const tools = require('../server/tools');
 const constants = require('../libs/constants');
 
 var _id;
-var _store;
-var _user;
-var _amount; 
-var _date;
-
 
 //noinspection JSLint
 function Receipt (store, user, amount, date) {
-    _store = store;
-    _user = user;
-    _amount = amount; 
-    _date = date;
+    this.store = store;
+    this.user = user;
+    this.amount = amount; 
+    this.date = date;
 }
 
 Receipt.prototype.getId = function(){
-    return _id;
-}
-Receipt.prototype.getStore = function(){
-    return _store;
-}
-Receipt.prototype.getUser = function(){
-    return _user;
-}
-Receipt.prototype.getAmount = function(){
-    return _amount;
-}
-Receipt.prototype.getDate = function(){
-    return _date;
+    return this._id;
 }
 
 Receipt.prototype.save = function (client) {
@@ -44,12 +27,12 @@ Receipt.prototype.save = function (client) {
 
     // INSERT INTO ocr.receipt(id, store, "user", amount, date) VALUES (?, ?, ?, ?, ?);
     var receipt = await(client.query(tools.replaceSchema('INSERT INTO $$SCHEMANAME$$.receipt(store, "user", amount, date) ' +
-                        "VALUES ($1, $2, $3, $4) RETURNING id;"), [_store, _user, _amount, _date]));
+                        "VALUES ($1, $2, $3, $4) RETURNING id;"), [this.store, this.user, this.amount, this.date]));
 
-    _id = receipt.rows[0].id;
-    console.log("receipt.id: ", _id);
+    this._id = receipt.rows[0].id;
+    console.log("receipt.id: ",this. _id);
 
-    return _id;
+    return this._id;
 };
 
 Receipt.prototype.get = function (client, id) {
