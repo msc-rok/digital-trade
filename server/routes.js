@@ -184,24 +184,7 @@ var process = function (req, res) {
             request(filepathcloud).pipe(writeFile).on('close', function () {
                 console.log(filepathcloud, 'saved to', filepathlocal)
 
-                var ocr;
-
-                async(function (res, ocr) {
-                    var client;
-                    try {
-                        client = await(pool.connect());
-                        var receipt = await(new Receipt(null, null, 0, new Date()));
-                        await(receipt.save(client));
-                        ocr = new OCR(receipt.getId());
-                        await(client.release());
-                    } catch (error) {
-                        console.log('%s', error)
-                        res.json(500, "Error while accessing db");
-                        if (client !== undefined) {
-                            await(client.release(true));
-                        }
-                    };
-                })(res, ocr);
+                var ocr = new OCR();
 
                 console.log(`tesseract.process(${filepathlocal}, ${ocr.options}`);
 
@@ -218,10 +201,15 @@ var process = function (req, res) {
                             console.log('successfully deleted %s', filepathlocal);
                         });
 
-                        async(function (res, text) {
+                        async(function (res, ocr, text) {
                             var client;
                             try {
                                 client = await(pool.connect());
+                                
+                                var receipt = await(new Receipt(null, null, 0, new Date()));
+                                await(receipt.save(client));
+                                ocr.receipt = receipt.getId();
+
                                 result = ocr.process(client, text, filepathcloud);
                                 await(client.release());
                             } catch (error) {
@@ -231,7 +219,7 @@ var process = function (req, res) {
                                     await(client.release(true));
                                 }
                             };
-                        })(res, text);
+                        })(res, ocr, text);
                     };
 
                     console.log('result (text) %s', text);
