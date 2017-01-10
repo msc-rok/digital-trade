@@ -217,7 +217,7 @@ var process = function (req, res) {
                                     res.json(200, result);
                                 } catch (error) {
                                     console.log('%s', error)
-                                    res.json(500, "Error while accessing db");
+                                    res.json(500, "Error in ocr engine");
                                     if (client !== undefined) {
                                         await(client.release(true));
                                     }
