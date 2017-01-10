@@ -12,7 +12,7 @@ var Receipt = require('../libs/classReceipt');
 var ReceiptItem = require('../libs/classReceiptItem');
 var Product = require('../libs/classProduct');
 
-const _regexWhitespaces = '\\s+';
+const _regexWhitespaces = '\\h+';
 
 function OCR(receipt) {
     this.options = {
