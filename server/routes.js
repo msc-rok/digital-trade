@@ -183,7 +183,7 @@ var process = function (req, res) {
 
             request(filepathcloud).pipe(writeFile).on('close', function () {
                 console.log(filepathcloud, 'saved to', filepathlocal)
-                
+
                 var ocr;
 
                 async(function (res) {
@@ -239,8 +239,9 @@ var process = function (req, res) {
 
                 });
 
-            };
+            });
 
         }
-    )
+
+    })
 };
