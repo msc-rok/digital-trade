@@ -15,7 +15,7 @@ function ReceiptItem (receipt, product, price, quantity) {
     this._id = null;
     this.receipt = receipt;
     this.product = product;
-    this.price = price.replace(/,/g, '.');
+    this.price = price;
     this.quantity = quantity;
 };
 
