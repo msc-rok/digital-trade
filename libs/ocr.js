@@ -128,4 +128,4 @@ OCR.prototype.saveResult = function (client, text, url) {
     
 };
 
-module.exports = OCR();
+module.exports = OCR;
