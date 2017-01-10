@@ -12,6 +12,7 @@ var _id;
 
 //noinspection JSLint
 function OCRResult (result, receipt, quality, psm, lang, url) {
+    this._id = null;
     this.result = result;
     this.receipt = receipt;
     this.quality = quality;

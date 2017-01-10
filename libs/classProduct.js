@@ -14,6 +14,7 @@ var _id;
 
 //noinspection JSLint
 function Product (name) {
+    this._id = null;
     this.name = name;
 }
 

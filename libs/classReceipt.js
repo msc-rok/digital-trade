@@ -12,6 +12,7 @@ var _id;
 
 //noinspection JSLint
 function Receipt (store, user, amount, date) {
+    this._id = null;
     this.store = store;
     this.user = user;
     this.amount = amount; 

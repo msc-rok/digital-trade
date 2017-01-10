@@ -12,6 +12,7 @@ var _id;
 
 //noinspection JSLint
 function ReceiptItem (receipt, product, price, quantity) {
+    this._id = null;
     this.receipt = receipt;
     this.product = product;
     this.price = price;

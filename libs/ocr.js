@@ -40,10 +40,6 @@ const regexGroups = {
 
 };
 
-OCR.prototype.getOptions = function(){
-    return options;
-}
-
 OCR.prototype.getRegexOfGroup = function(group, index){
     var groupRegex;
     switch (group)
