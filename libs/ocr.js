@@ -92,8 +92,9 @@ OCR.prototype.process = function (client, text, url){
     this.ocrresult.save(client);
 
     this.regexPattern = this.getRegex(this.regexItemPatternMacro);
-
     var regex = new RegExp(this.regexPattern,"g");
+
+
 
     var product;
     var receiptItem;
@@ -115,15 +116,13 @@ OCR.prototype.process = function (client, text, url){
         this.receiptItems.push(receiptItem);
     }
 
-    
+    console.log(`After ocr.saveResult(${util.inspect(this, false, null)})`);
 
     var response = {ocrresult: this.ocrresult,
         receipt: this.receipt,
         products: this.products,
         receiptitems: this.receiptItems
     }
-
-    console.log(`After ocr.saveResult(${util.inspect(response, false, null)})`);
 
     return response;
 }
