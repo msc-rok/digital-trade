@@ -183,7 +183,7 @@ var process = function (req, res) {
 
             request(filepathcloud).pipe(writeFile).on('close', function () {
                 console.log(filepathcloud, 'saved to', filepathlocal)
-
+                var text;
                 async(function (res, text) {
                     var client;
                     try {
