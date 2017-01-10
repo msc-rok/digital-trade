@@ -12,17 +12,24 @@ var Receipt = require('../libs/classReceipt');
 var ReceiptItem = require('../libs/classReceiptItem');
 var Product = require('../libs/classProduct');
 
-function OCR() {};
+const _regexWhitespaces = '\\s+';
 
-var options = {
-    l: config("OCR_OPTIONS_LANG") || 'deu',
-    psm:  config("OCR_OPTIONS_PSM") || 6
+function OCR(receipt) {
+    this.options = {
+        l: config("OCR_OPTIONS_LANG") || 'deu',
+        psm:  config("OCR_OPTIONS_PSM") || 6
+    };
+
+    this.regexItemPatternMacro = config("OCR_ITEM_PATTERN") || "$NAME$PRICE$QUANTITY"
+    this.regexGroupIndex = { name: null, price: null, quantity: null, ean: null };
+
+    this.regexPattern = "";
+
+    this.receipt = receipt;
+    this.ocrresult = null;
+    this.products = [];
+    this.receiptItems = [];
 };
-
-const regexMacroPattern = config("OCR_REGEX_PATTERN") || "$NAME$PRICE$QUANTITY"
-var regexGroupIndex = { name: 1, price: 2, quantity: 3, ean: 4 };
-
-const regexWhitespaces = '\\s+';
 
 const regexGroups = {
     name : '.+?',
@@ -43,19 +50,19 @@ OCR.prototype.getRegexOfGroup = function(group, index){
     {
         case "name":
             groupRegex = regexGroups.name;
-            regexGroupIndex.name = index;
+            this.regexGroupIndex.name = index;
             break;
         case "price":
             groupRegex = regexGroups.price;
-            regexGroupIndex.price = index;
+            this.regexGroupIndex.price = index;
             break;
         case "quantity":
             groupRegex = regexGroups.quantity;
-            regexGroupIndex.quantity = index;
+            this.regexGroupIndex.quantity = index;
             break;
         case "ean":
             groupRegex = regexGroups.ean;
-            regexGroupIndex.ean = index;
+            this.regexGroupIndex.ean = index;
             break;
         default:
             groupRegex = group;
@@ -73,7 +80,7 @@ OCR.prototype.getRegex = function(macroPattern) {
     for (i = 1; i <= groups.length - 1; i += 1) { 
         regex += this.getRegexOfGroup(groups[i].toLowerCase(), i);
         if (i < groups.length-1){
-             regex += regexWhitespaces;
+             regex += this._regexWhitespaces;
         }
     }
 
@@ -81,26 +88,16 @@ OCR.prototype.getRegex = function(macroPattern) {
 
 };
 
-OCR.prototype.saveResult = function (res, client, text, url) {
-    console.log('Before ocr.saveResult()');
+OCR.prototype.process = function (client, text, url){
+    this.ocrresult = new OCRResult({text: text}, this.receipt.getId(),1.0,options.psm, options.l, url)
+    this.ocrresult.save(client);
 
-    var receipt = new Receipt(null, null, 1234, new Date());
-    receipt.save(client);
+    this.regexPattern = this.getRegex(this.regexItemMacroPattern);
 
-    var resultJson = {text: text};
-    var ocrresult = new OCRResult(resultJson, receipt.getId(),1.0,options.psm, options.l, url)
-    ocrresult.save(client);
-
-    var regexPattern = this.getRegex(regexMacroPattern);
-    console.log('regexMacroPattern: ',regexMacroPattern)
-    console.log('regexPattern: ',regexPattern)
-
-    var regex = new RegExp(regexPattern,"g");
+    var regex = new RegExp(this.regexPattern,"g");
 
     var product;
-    var products = [];
     var receiptItem;
-    var receiptItems = [];
     var match;
     while (match = regex.exec(text)) {
         /*var i;
@@ -109,16 +106,17 @@ OCR.prototype.saveResult = function (res, client, text, url) {
         }*/
         console.log(`receiptItem.save: ${match[0]}`);
 
-        product = new Product(match[regexGroupIndex.name]);
+        product = new Product(match[this.regexGroupIndex.name]);
         product.save(client);
-        products.push(product);
         
-        receiptItem = new ReceiptItem(receipt.getId(), product.getId(), match[regexGroupIndex.price], match[regexGroupIndex.quantity])
+        receiptItem = new ReceiptItem(this.receipt.getId(), product.getId(), match[regexGroupIndex.price], match[regexGroupIndex.quantity])
         receiptItem.save(client);
-        receiptItems.push(receiptItem);
+
+        this.products.push(product);
+        this.receiptItems.push(receiptItem);
     }
 
-    var response = {receipts: receipt,
+    var response = {receipts: this.receipt,
         products: products,
         receiptitems: receiptItems
     }
@@ -126,9 +124,12 @@ OCR.prototype.saveResult = function (res, client, text, url) {
     console.log(`After ocr.saveResult(${util.inspect(response, false, null)})`);
 
     return response;
-    //await(users.auditLog(client, userId, constants.AuditProcess, 'Updated templates (' + name + ')', null, obj.length));
-    //await(client.query("COMMIT"));
-    //res.json({result: 'Rows received: ' + obj.length});
+}
+
+OCR.prototype.saveResult = function (client, text, url) {
+    console.log('Before ocr.saveResult()');
+
+    
 };
 
-module.exports = new OCR();
+module.exports = OCR();

@@ -205,7 +205,12 @@ var process = function(req, res) {
                         
                         try {
                                 client = await(pool.connect());
-                                result = await(ocr.saveResult(res, client, text, filepathcloud));
+                                
+                                var receipt = await(new Receipt(null, null, 0, new Date()));
+                                await(receipt.save(client));
+                                
+                                result = await(new ocr(receipt.getId()).process(client, text, filepathcloud));
+                                
                                 await(client.release());
                             } catch (error) {
                                 console.log('%s', error)
@@ -216,7 +221,7 @@ var process = function(req, res) {
                         };
                     })(res, text);
                     console.log('result (text) %s', text);
-                    res.json(200, text);
+                    res.json(200, result);
                         
                     };
                 });
