@@ -88,7 +88,7 @@ OCR.prototype.getRegex = function(macroPattern) {
 OCR.prototype.process = function (client, text, url){
 
 
-    this.ocrresult = new OCRResult({text: text}, this.receipt,this.quality, this.options.psm, this.options.l, url)
+    this.ocrresult = new OCRResult({text: text}, this.receipt, this.quality, this.options.psm, this.options.l, url)
     this.ocrresult.save(client);
 
     this.regexPattern = this.getRegex(this.regexItemPatternMacro);
@@ -109,7 +109,7 @@ OCR.prototype.process = function (client, text, url){
         product = new Product(match[this.regexGroupIndex.name]);
         product.save(client);
         
-        receiptItem = new ReceiptItem(receipt.getId(), product.getId(), match[regexGroupIndex.price], match[regexGroupIndex.quantity])
+        receiptItem = new ReceiptItem(this.receipt, product.getId(), match[regexGroupIndex.price], match[regexGroupIndex.quantity])
         receiptItem.save(client);
 
         this.products.push(product);
