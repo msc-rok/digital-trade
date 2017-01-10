@@ -186,7 +186,7 @@ var process = function (req, res) {
 
                 var ocr;
 
-                async(function (res) {
+                async(function (res, ocr) {
                     var client;
                     try {
                         client = await(pool.connect());
@@ -201,7 +201,7 @@ var process = function (req, res) {
                             await(client.release(true));
                         }
                     };
-                })(res);
+                })(res, ocr);
 
                 console.log(`tesseract.process(${filepathlocal}, ${ocr.options}`);
 
