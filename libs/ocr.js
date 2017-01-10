@@ -109,7 +109,7 @@ OCR.prototype.process = function (client, text, url){
         product = new Product(match[this.regexGroupIndex.name]);
         product.save(client);
         
-        receiptItem = new ReceiptItem(this.receipt.getId(), product.getId(), match[regexGroupIndex.price], match[regexGroupIndex.quantity])
+        receiptItem = new ReceiptItem(receipt.getId(), product.getId(), match[regexGroupIndex.price], match[regexGroupIndex.quantity])
         receiptItem.save(client);
 
         this.products.push(product);
