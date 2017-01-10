@@ -24,6 +24,7 @@ function OCR(receipt) {
     this.regexGroupIndex = { name: null, price: null, quantity: null, ean: null };
 
     this.regexPattern = "";
+    this.quality = 1.0;
 
     this.receipt = receipt;
     this.ocrresult = null;
@@ -85,8 +86,6 @@ OCR.prototype.getRegex = function(macroPattern) {
 };
 
 OCR.prototype.process = function (client, text, url){
-    this.ocrresult = new OCRResult({text: text}, this.receipt.getId(),1.0,options.psm, options.l, url)
-    this.ocrresult.save(client);
 
     this.regexPattern = this.getRegex(this.regexItemMacroPattern);
 
@@ -112,9 +111,13 @@ OCR.prototype.process = function (client, text, url){
         this.receiptItems.push(receiptItem);
     }
 
-    var response = {receipts: this.receipt,
-        products: products,
-        receiptitems: receiptItems
+    this.ocrresult = new OCRResult({text: text}, this.receipt,this.quality, options.psm, options.l, url)
+    this.ocrresult.save(client);
+
+    var response = {ocrresult: this.ocrresult,
+        receipt: this.receipt,
+        products: this.products,
+        receiptitems: this,receiptItems
     }
 
     console.log(`After ocr.saveResult(${util.inspect(response, false, null)})`);
