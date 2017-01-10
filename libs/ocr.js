@@ -111,7 +111,7 @@ OCR.prototype.process = function (client, text, url){
         this.receiptItems.push(receiptItem);
     }
 
-    this.ocrresult = new OCRResult({text: text}, this.receipt,this.quality, options.psm, options.l, url)
+    this.ocrresult = new OCRResult({text: text}, this.receipt,this.quality, this.options.psm, this.options.l, url)
     this.ocrresult.save(client);
 
     var response = {ocrresult: this.ocrresult,
