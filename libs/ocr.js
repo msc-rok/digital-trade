@@ -87,6 +87,10 @@ OCR.prototype.getRegex = function(macroPattern) {
 
 OCR.prototype.process = function (client, text, url){
 
+
+    this.ocrresult = new OCRResult({text: text}, this.receipt,this.quality, this.options.psm, this.options.l, url)
+    this.ocrresult.save(client);
+    
     this.regexPattern = this.getRegex(this.regexItemPatternMacro);
 
     var regex = new RegExp(this.regexPattern,"g");
@@ -111,8 +115,7 @@ OCR.prototype.process = function (client, text, url){
         this.receiptItems.push(receiptItem);
     }
 
-    this.ocrresult = new OCRResult({text: text}, this.receipt,this.quality, this.options.psm, this.options.l, url)
-    this.ocrresult.save(client);
+    
 
     var response = {ocrresult: this.ocrresult,
         receipt: this.receipt,
@@ -124,11 +127,5 @@ OCR.prototype.process = function (client, text, url){
 
     return response;
 }
-
-OCR.prototype.saveResult = function (client, text, url) {
-    console.log('Before ocr.saveResult()');
-
-    
-};
 
 module.exports = OCR;
