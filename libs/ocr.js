@@ -87,7 +87,7 @@ OCR.prototype.getRegex = function(macroPattern) {
 
 OCR.prototype.process = function (client, text, url){
 
-    this.regexPattern = this.getRegex(this.regexItemMacroPattern);
+    this.regexPattern = this.getRegex(this.regexItemPatternMacro);
 
     var regex = new RegExp(this.regexPattern,"g");
 
