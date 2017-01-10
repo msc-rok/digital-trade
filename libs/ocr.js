@@ -77,7 +77,7 @@ OCR.prototype.getRegex = function(macroPattern) {
     for (i = 1; i <= groups.length - 1; i += 1) { 
         regex += this.getRegexOfGroup(groups[i].toLowerCase(), i);
         if (i < groups.length-1){
-             regex += this._regexWhitespaces;
+             regex += _regexWhitespaces;
         }
     }
 
