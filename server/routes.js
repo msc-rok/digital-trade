@@ -191,7 +191,7 @@ var process = function (req, res) {
 
                         var receipt = await(new Receipt(null, null, 0, new Date()));
                         await(receipt.save(client));
-                        var ocr = new OCR(receipt.getId())
+                        var ocr = new OCR(receipt.getId());
 
                         console.log(`tesseract.process(${filepathlocal}, ${ocr.options}`);
 
@@ -208,7 +208,7 @@ var process = function (req, res) {
                                     console.log('successfully deleted %s', filepathlocal);
                                 });
 
-                                result = await(ocr.process(client, text, filepathcloud));
+                                result = ocr.process(client, text, filepathcloud);
                             }
                         });
                         await(client.release());
