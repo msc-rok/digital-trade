@@ -81,7 +81,7 @@ OCR.prototype.getRegex = function(macroPattern) {
              regex += _regexWhitespaces;
         }
     }
-    Console.log(`regex=${regex}`)
+    console.log(`regex=${regex}`);
     return (regex);
 
 };
