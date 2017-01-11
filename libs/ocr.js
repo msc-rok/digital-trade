@@ -19,8 +19,8 @@ const _regexWhitespaces = '[ \\t]+'; //whitespace or tab (no newline)
  */
 function OCR(receipt) {
     this.options = {
-        l: config("OCR_OPTIONS_LANG") || 'deu',
-        psm:  config("OCR_OPTIONS_PSM") || 6
+        l: process.env.OCR_OPTIONS_LANG || 'deu',
+        psm:  process.env.OCR_OPTIONS_PSM || 6
     };
 
     this.regexItemPatternMacro = process.env.OCR_ITEM_PATTERN || "NAME PRICE QUANTITY"

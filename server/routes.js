@@ -54,20 +54,38 @@ module.exports = function (app) {
     app.get("/api/products/:productid", products);
     app.get("/api/products/:productid/receiptitems", receiptitems);
 
-    app.get("/api/config/:key/:value", function(req, res) {
-        
-        var oldvalue = process.env[req.params.key];
-        process.env[req.params.key] = req.params.value;
-
-        res.json({
-                key: req.params.key,
-                oldvalue: oldvalue,
-                newvalue: process.env[req.params.key]
-            });
-        
-        console.log(""  + process.env[req.params.key]);
-    });
+    app.get("/api/config/:key", config);
+    app.patch("/api/config/:key/:value", config);
 };
+
+/**
+ * Temporally changes config vars.
+ * WARNING: the variables refreshed on deploy/restart. Only changes in heroku itself are persistent!
+ */
+var config = function(req, res) {
+
+        var currentvalue = process.env[req.params.key];
+
+        var response;
+        if(req.params.value){
+            // set new value
+            process.env[req.params.key] = req.params.value;
+            
+            response = {
+                key: req.params.key,
+                value: process.env[req.params.key],
+                oldvalue: currentvalue
+            }
+        }
+        else{
+            response = {
+                key: req.params.key,
+                value: currentvalue
+            }
+        }
+        res.json(response);
+        console.log(response);
+    };
 
 /**
  * get specific ocrresult with all related records (receipt, receiptitems, products)

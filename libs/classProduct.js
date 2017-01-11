@@ -8,7 +8,7 @@ const util = require('util');
 const tools = require('../server/tools');
 const constants = require('../libs/constants');
 
-const similaritylimit = config("DATABASE_SIMILARITY_LIMIT") || 0.6
+const similaritylimit = process.env.DATABASE_SIMILARITY_LIMIT || 0.6
 
 var _id;
 
