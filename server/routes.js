@@ -46,6 +46,7 @@ module.exports = function (app) {
     app.get("/api/receipts/:receiptid", receipts);
     app.get("/api/receipts/:receiptid/ocrresults", ocrresults);
     app.get("/api/receipts/:receiptid/receiptitems", receiptitems);
+    app.get("/api/receipts/:receiptid/receiptitems/products", receiptitemproducts);
 
     app.get("/api/receiptitems", receiptitems);
     app.get("/api/receiptitems/:receiptitemid", receiptitems);
@@ -55,6 +56,45 @@ module.exports = function (app) {
     app.get("/api/products/:productid/receiptitems", receiptitems);
 
 };
+
+/**
+ * get all/specific receiptitems & corresponding product(s)
+ */
+var receiptitemproducts = function (req, res) {
+    var client;
+    async(function (res) {
+        try {
+            client = await(pool.connect());
+            var dbReceiptItems = await(new ReceiptItem(req.params.receiptid, req.params.productid, null, null).get(client, req.params.receiptitemid));
+            
+            var dbProducts;
+            var addCond = '';
+            if (dbReceiptItems.length > 0){
+                for(let i = 0, l = dbReceiptItems.length-1; i <= l; i++) {
+                    addCond += `${dbReceiptItems[i].product}`
+                    if (i<l){addCOnd += ','}
+                }
+                addCond = `id IN (${addCond})`;
+               dbProducts = await(new Product().get(client, null, addCond));
+            }
+            
+            var response = {
+                receiptitems: dbReceiptItems, 
+                products: dbProducts };
+            res.json(response);
+            console.log(response);
+            if (client !== undefined) {
+                client.release(true);
+            }
+        } catch (error) {
+            console.log(error);
+            res.status(500).send();
+            if (client !== undefined) {
+                client.release(true);
+            }
+        }
+    })(res);
+}
 
 /**
  * get all/specific product(s)

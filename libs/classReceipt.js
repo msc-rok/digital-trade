@@ -51,6 +51,9 @@ Receipt.prototype.get = function (client, id) {
     if (id){
         condition += ` AND id=${id}`;
     }
+    if (addCond){
+        condition += ` AND (${addCond})`;
+    }
     var receipt = await(client.query(tools.replaceSchema(`SELECT * FROM $$SCHEMANAME$$.receipt WHERE ${condition};`)));
     
     console.log("receipt: ", receipt.rows.length);    

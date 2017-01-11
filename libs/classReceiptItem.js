@@ -53,10 +53,12 @@ ReceiptItem.prototype.get = function (client, id) {
     if (this.product){
         condition += ` AND product=${this.product}`;
     }
-   if (this.receipt){
+    if (this.receipt){
         condition += ` AND receipt=${this.receipt}`;
     }
-
+    if (addCond){
+        condition += ` AND (${addCond})`;
+    }
 
     var items = await(client.query(tools.replaceSchema(`SELECT * FROM $$SCHEMANAME$$.receiptitem WHERE ${condition};`)));
     

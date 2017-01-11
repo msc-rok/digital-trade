@@ -45,7 +45,7 @@ OCRResult.prototype.save = function (client) {
 /**
  * Get specific/all object(s)
   */
-OCRResult.prototype.get = function (client, id) {
+OCRResult.prototype.get = function (client, id, addCond) {
     console.log("OCRResult.get(): ", JSON.stringify(this));
 
     var condition = `1=1`;
@@ -55,6 +55,10 @@ OCRResult.prototype.get = function (client, id) {
     if (this.receipt){
         condition += ` AND receipt=${this.receipt}`;
     }
+    if (addCond){
+        condition += ` AND (${addCond})`;
+    }
+
     //select array_to_json(array_agg(row_to_json(t))) as measures from (select * from $$SCHEMANAME$$.templatesmeasures) t;"
     var OCRResults = await(client.query(tools.replaceSchema(`SELECT * FROM $$SCHEMANAME$$.ocrresult WHERE ${condition};`)));
     
