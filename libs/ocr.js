@@ -73,7 +73,7 @@ OCR.prototype.getRegexOfGroup = function(group, index){
 
 OCR.prototype.getRegex = function(macroPattern) {
     var regex = "";
-    var groups = macroPattern.split(' ');
+    var groups = macroPattern.split(/[ ]+/);
     var i;
     for (i = 0; i <= groups.length - 1; i += 1) { 
         regex += this.getRegexOfGroup(groups[i], i);
@@ -81,7 +81,7 @@ OCR.prototype.getRegex = function(macroPattern) {
              regex += _regexWhitespaces;
         }
     }
-
+    Console.log(`regex=${regex}`)
     return (regex);
 
 };
