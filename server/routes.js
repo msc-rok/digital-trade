@@ -56,7 +56,7 @@ module.exports = function (app) {
 
     app.get("/api/config/:key/:value", function(req, res) {
         
-        var oldvalue = config(req.params.key);
+        var oldvalue = process.env[req.params.key];
         process.env[req.params.key] = req.params.value;
 
         res.json({

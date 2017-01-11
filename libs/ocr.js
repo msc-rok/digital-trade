@@ -23,7 +23,7 @@ function OCR(receipt) {
         psm:  config("OCR_OPTIONS_PSM") || 6
     };
 
-    this.regexItemPatternMacro = config("OCR_ITEM_PATTERN") || "NAME PRICE QUANTITY"
+    this.regexItemPatternMacro = process.env.OCR_ITEM_PATTERN || "NAME PRICE QUANTITY"
     this.regexGroupIndex = { name: null, price: null, quantity: null, ean: null };
 
     this.regexPattern = "";
