@@ -54,8 +54,17 @@ module.exports = function (app) {
     app.get("/api/products/:productid", products);
     app.get("/api/products/:productid/receiptitems", receiptitems);
 
-    app.get("/api/config/OCR_ITEM_PATTERN/:value", function(req, res) {
-        process.env.OCR_ITEM_PATTERN = req.params.value
+    app.get("/api/config/:key/:value", function(req, res) {
+        
+        var oldvalue = config(req.params.key);
+        process.env[req.params.key] = req.params.value;
+
+        res.json({
+                key: req.params.key,
+                oldvalue: oldvalue,
+                newvalue: config(req.params.key)
+            });
+        
         console.log(""  + config("OCR_ITEM_PATTERN"));
     });
 };
