@@ -40,13 +40,12 @@ module.exports = function (app) {
     app.post("/api/ocr", ocrengine);
 
     app.get("/api/ocrresults", ocrresults);
-    app.get("/api/ocrresults/:ocrresultid", ocrresults);
+    app.get("/api/ocrresults/:ocrresultid", ocrresults_deep);
 
     app.get("/api/receipts", receipts);
     app.get("/api/receipts/:receiptid", receipts);
     app.get("/api/receipts/:receiptid/ocrresults", ocrresults);
     app.get("/api/receipts/:receiptid/receiptitems", receiptitems);
-    app.get("/api/receipts/:receiptid/receiptitems/products", receiptitemproducts);
 
     app.get("/api/receiptitems", receiptitems);
     app.get("/api/receiptitems/:receiptitemid", receiptitems);
@@ -60,27 +59,43 @@ module.exports = function (app) {
 /**
  * get all/specific receiptitems & corresponding product(s)
  */
-var receiptitemproducts = function (req, res) {
+var ocrresults_deep = function (req, res) {
     var client;
     async(function (res) {
         try {
             client = await(pool.connect());
-            var dbReceiptItems = await(new ReceiptItem(req.params.receiptid, req.params.productid, null, null).get(client, req.params.receiptitemid));
-            
+            var dbOCRResults;
+            var dbReceipts;
+            var dbReceiptItems;
             var dbProducts;
-            var addCond = '';
-            if (dbReceiptItems.length > 0){
-                for(let i = 0, l = dbReceiptItems.length-1; i <= l; i++) {
-                    addCond += `${dbReceiptItems[i].product}`
-                    if (i<l){addCOnd += ','}
+
+            dbOCRResults = await(new OCRResult().get(client, req.params.ocrresultid));
+            if (dbOCRResults.length = 1) {
+
+                dbReceipts = await(new Receipt().get(client, dbOCRResults[0].receipt));
+                if (dbReceipts.length = 1) {
+
+                    dbReceiptItems = await(new ReceiptItem(dbOCRResults[0].receipt).get(client));
+                    if (dbReceiptItems.length > 0) {
+                        var addCond = '';
+                        if (dbReceiptItems.length > 0) {
+                            for (let i = 0, l = dbReceiptItems.length - 1; i <= l; i++) {
+                                addCond += `${dbReceiptItems[i].product}`
+                                if (i < l) { addCond += ',' }
+                            }
+                            addCond = `id IN (${addCond})`;
+                            dbProducts = await(new Product().get(client, null, addCond));
+                        }
+                    }
                 }
-                addCond = `id IN (${addCond})`;
-               dbProducts = await(new Product().get(client, null, addCond));
             }
-            
+
             var response = {
-                receiptitems: dbReceiptItems, 
-                products: dbProducts };
+                ocrresults: dbOCRResults,
+                receipts: dbReceipts,
+                receiptitems: dbReceiptItems,
+                products: dbProducts
+            };
             res.json(response);
             console.log(response);
             if (client !== undefined) {
@@ -256,7 +271,7 @@ var ocrengine = function (req, res) {
                         console.error(err);
                         res.json(500, "Error while processing tesseract");
                     } else {
-                        
+
                         // delete transformed image from local server
                         fs.unlink(filepathlocal, function (err) {
                             if (err) {
@@ -274,10 +289,10 @@ var ocrengine = function (req, res) {
                                     var receipt = await(new Receipt(null, null, 0, new Date()));
                                     await(receipt.save(client));
                                     ocr.receipt = receipt.getId();
-                                    
+
                                     // process image result in prototype engine
                                     result = ocr.process(client, text, filepathcloud);
-                                    
+
                                     // submit to db
                                     await(client.release());
 
@@ -292,7 +307,7 @@ var ocrengine = function (req, res) {
                                 };
                             })(res, ocr, text);
 
-                            
+
                         });
                     };
 
