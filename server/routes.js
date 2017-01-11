@@ -64,16 +64,16 @@ var ocrresults_deep = function (req, res) {
     async(function (res) {
         try {
             client = await(pool.connect());
-            var dbOCRResults;
-            var dbReceipts;
-            var dbReceiptItems;
-            var dbProducts;
+            var dbOCRResults = [];
+            var dbReceipts = [];
+            var dbReceiptItems = [];
+            var dbProducts = [];
 
             dbOCRResults = await(new OCRResult().get(client, req.params.ocrresultid));
-            if (dbOCRResults.length = 1) {
+            if (dbOCRResults.length == 1) {
 
                 dbReceipts = await(new Receipt().get(client, dbOCRResults[0].receipt));
-                if (dbReceipts.length = 1) {
+                if (dbReceipts.length == 1) {
 
                     dbReceiptItems = await(new ReceiptItem(dbOCRResults[0].receipt).get(client));
                     if (dbReceiptItems.length > 0) {
