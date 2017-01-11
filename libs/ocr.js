@@ -66,6 +66,8 @@ OCR.prototype.getRegexOfGroup = function(group, index){
             groupRegex = group;
         break;
     }
+    // (.+?)\h+(\d+([\.\,])\d+)\h+([AB]{1})
+    // (.+?)[ \t]+(\d+([\.\,])\d+)[ \t]+([12]{1})
     // (?P<name>.+?)\s+(?P<price>\d+\.\d+)\s+(?P<quantity>\d)
     // (?P<name>.+?)\s+(?P<price>\d+\.\d+)\s(?<quantity>\d)
     return `(${groupRegex})`;
@@ -75,8 +77,8 @@ OCR.prototype.getRegex = function(macroPattern) {
     var regex = "";
     var groups = macroPattern.split(/[ ]+/);
     var i;
-    for (i = 0; i <= groups.length - 1; i += 1) { 
-        regex += this.getRegexOfGroup(groups[i], i);
+    for (i = 0; i <= groups.length - 1; i += 1) {
+        regex += this.getRegexOfGroup(groups[i], i + 1);
         if (i < groups.length-1){
              regex += _regexWhitespaces;
         }
