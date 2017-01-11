@@ -35,7 +35,9 @@ module.exports = function (app) {
         }
     ));
 
-    app.post("/api/ocr", process);
+    // REST-API Endpoints
+
+    app.post("/api/ocr", ocrengine);
 
     app.get("/api/ocrresults", ocrresults);
     app.get("/api/ocrresults/:ocrresultid", ocrresults);
@@ -54,14 +56,18 @@ module.exports = function (app) {
 
 };
 
+/**
+ * get all/specific product(s)
+ */
 var products = function (req, res) {
     var client;
     async(function (res) {
         try {
             client = await(pool.connect());
             var dbProducts = await(new Product().get(client, req.params.productid));
-            res.json({ products: dbProducts });
-
+            var response = { products: dbProducts };
+            res.json(response);
+            console.log(response);
             if (client !== undefined) {
                 client.release(true);
             }
@@ -75,14 +81,18 @@ var products = function (req, res) {
     })(res);
 }
 
+/**
+ * get all/specific receipt(s)
+ */
 var receipts = function (req, res) {
     var client;
     async(function (res) {
         try {
             client = await(pool.connect());
             var dbReceipts = await(new Receipt().get(client, req.params.receiptid));
-
-            res.json({ receipts: dbReceipts });
+            var response = { receipts: dbReceipts };
+            res.json(response);
+            console.log(response);
             if (client !== undefined) {
                 client.release(true);
             }
@@ -96,13 +106,18 @@ var receipts = function (req, res) {
     })(res);
 };
 
+/**
+ * get all/specific receiptitem(s)
+ */
 var receiptitems = function (req, res) {
     var client;
     async(function (res) {
         try {
             client = await(pool.connect());
             var dbReceiptItems = await(new ReceiptItem(req.params.receiptid, req.params.productid, null, null).get(client, req.params.receiptitemid));
-            res.json({ receiptitems: dbReceiptItems });
+            var response = { receiptitems: dbReceiptItems };
+            res.json(response);
+            console.log(response);
             if (client !== undefined) {
                 client.release(true);
             }
@@ -116,13 +131,18 @@ var receiptitems = function (req, res) {
     })(res);
 }
 
+/**
+ * get all/specific ocrresult(s)
+ */
 var ocrresults = function (req, res) {
     var client;
     async(function (res) {
         try {
             client = await(pool.connect());
             var dbOCRResults = await(new OCRResult(null, req.params.receiptid).get(client, req.params.ocrresultid));
-            res.json(dbOCRResults);
+            var response = { ocrresults: dbOCRResults };
+            res.json(response);
+            console.log(response);
             if (client !== undefined) {
                 client.release(true);
             }
@@ -140,6 +160,7 @@ var ocrresults = function (req, res) {
  * Following steps done under this functions.
  *
  * 1. Uploads image under '.tmp' folder.
+ * 2. Uploads image to cloud storage (transformation)
  * 2. Grab text from image using 'tesseract-ocr'.
  * 3. Delete image from hardisk.
  * 4. Return text in json format.
@@ -147,7 +168,7 @@ var ocrresults = function (req, res) {
  * @param req
  * @param res
  */
-var process = function (req, res) {
+var ocrengine = function (req, res) {
 
     //console.log(req)
 
@@ -155,7 +176,7 @@ var process = function (req, res) {
     var filepathcloud;
     var result;
 
-    // ####################
+    // Upload image to cloud server
     let uploadcloud = superagent.post(CLOUDINARY_UPLOAD_URL)
         .field('upload_preset', CLOUDINARY_UPLOAD_PRESET)
         .field('file', fs.createReadStream(filepathlocal));
@@ -165,6 +186,7 @@ var process = function (req, res) {
         if (err) {
             console.error(err);
         } else {
+            // delete image from local server
             fs.unlink(filepathlocal, function (err) {
                 if (err) {
                     res.json(500, "Error while deleting image");
@@ -177,24 +199,23 @@ var process = function (req, res) {
             filepathcloud = response.body.secure_url;
             console.log("filepathcloud:", filepathcloud);
 
-            // ###########################
-
+            //download transformed image from cloud server (only local images can be processed by tesseract)
             var writeFile = fs.createWriteStream(filepathlocal);
 
             request(filepathcloud).pipe(writeFile).on('close', function () {
                 console.log(filepathcloud, 'saved to', filepathlocal)
 
                 var ocr = new OCR();
-
                 console.log(`tesseract.process(${filepathlocal}, ${ocr.options}`);
 
-                // Recognize text of any language in any format
+                // Recognize text by tesseract
                 tesseract.process(filepathlocal, ocr.options, function (err, text) {
                     if (err) {
                         console.error(err);
                         res.json(500, "Error while processing tesseract");
                     } else {
-
+                        
+                        // delete transformed image from local server
                         fs.unlink(filepathlocal, function (err) {
                             if (err) {
                                 res.json(500, "Error while deleting image");
@@ -204,13 +225,18 @@ var process = function (req, res) {
                             async(function (res, ocr, text) {
                                 var client;
                                 try {
+                                    // db access
                                     client = await(pool.connect());
 
+                                    // create & save dummy receipt (TODO: receipt information out of ocr result)
                                     var receipt = await(new Receipt(null, null, 0, new Date()));
                                     await(receipt.save(client));
                                     ocr.receipt = receipt.getId();
-
+                                    
+                                    // process image result in prototype engine
                                     result = ocr.process(client, text, filepathcloud);
+                                    
+                                    // submit to db
                                     await(client.release());
 
                                     console.log('result (text) %s', text);

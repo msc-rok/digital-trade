@@ -10,7 +10,9 @@ const constants = require('../libs/constants');
 
 var _id;
 
-//noinspection JSLint
+/**
+ * Constructor
+ */
 function Receipt (store, user, amount, date) {
     this._id = null;
     this.store = store;
@@ -23,6 +25,9 @@ Receipt.prototype.getId = function(){
     return this._id;
 }
 
+/**
+ * Save object to DB
+ */
 Receipt.prototype.save = function (client) {
     console.log("receipt.save(): ", JSON.stringify(this));
 
@@ -36,6 +41,9 @@ Receipt.prototype.save = function (client) {
     return this._id;
 };
 
+/**
+ * Get specific/all object(s)
+  */
 Receipt.prototype.get = function (client, id) {
     console.log("receipt.get(): ", JSON.stringify(this));
 

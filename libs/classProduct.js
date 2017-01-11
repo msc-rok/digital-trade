@@ -12,7 +12,9 @@ const similaritylimit = config("DATABASE_SIMILARITY_LIMIT") || 0.6
 
 var _id;
 
-//noinspection JSLint
+/**
+ * Constructor
+ */
 function Product (name) {
     this._id = null;
     this.name = name;
@@ -22,6 +24,10 @@ Product.prototype.getId = function(){
     return this._id;
 }
 
+/**
+ * Executes findSimilar();
+ * If similar product found, sets _id to id of similar, else saves new object to.
+ */
 Product.prototype.save = function (client) {
     this._id = this.findSimilar(client);
     if (!this._id) {
@@ -30,6 +36,10 @@ Product.prototype.save = function (client) {
     console.log(`product.save(${JSON.stringify(this)})`);
 }
 
+/**
+ * Searchs for similar product.
+ * Similarity limit defined by config var "DATABASE_SIMILARITY_LIMIT". (Default: 0.6)
+ */
 Product.prototype.findSimilar = function (client) {
     console.log(`product.findSimilar(${util.inspect(this, false, null)})`)
 
@@ -52,6 +62,9 @@ Product.prototype.findSimilar = function (client) {
     return productid;
 };
 
+/**
+ * Adds new master data product
+ */
 Product.prototype.add = function (client) {
     console.log("product.add(): ", JSON.stringify(this));
 
@@ -65,6 +78,9 @@ Product.prototype.add = function (client) {
     return productid;
 };
 
+/**
+ * Get specific/all object(s)
+  */
 Product.prototype.get = function (client, id) {
     console.log("product.get(): ", JSON.stringify(this));
 

@@ -10,7 +10,9 @@ const constants = require('../libs/constants');
 
 var _id;
 
-//noinspection JSLint
+/**
+ * Constructor
+ */
 function OCRResult (result, receipt, quality, psm, lang, url) {
     this._id = null;
     this.result = result;
@@ -25,6 +27,9 @@ OCRResult.prototype.getId = function(){
     return _id;
 }
 
+/**
+ * Save object to DB
+ */
 OCRResult.prototype.save = function (client) {
     console.log("OCRResult.save(): ", JSON.stringify(this));
 
@@ -37,6 +42,9 @@ OCRResult.prototype.save = function (client) {
     return this._id;
 }
 
+/**
+ * Get specific/all object(s)
+  */
 OCRResult.prototype.get = function (client, id) {
     console.log("OCRResult.get(): ", JSON.stringify(this));
 
@@ -52,7 +60,7 @@ OCRResult.prototype.get = function (client, id) {
     
     console.log("OCRResults: ", OCRResults.rows.length);    
 
-    return {ocrresults: OCRResults.rows};
+    return OCRResults.rows;
 };
 
 

@@ -14,6 +14,9 @@ var Product = require('../libs/classProduct');
 
 const _regexWhitespaces = '[ \\t]+'; //whitespace or tab (no newline)
 
+/**
+ * Constructor
+ */
 function OCR(receipt) {
     this.options = {
         l: config("OCR_OPTIONS_LANG") || 'deu',
@@ -37,8 +40,6 @@ const regexGroups = {
     price: '\\d+([\\.\\,])\\d+',
     quantity: '\\d+',
     ean: '\\d+'
-    // (?P<name>.+?)\s(?<price>\d+\.\d+)\s(?<quantity>\d)
-
 };
 
 OCR.prototype.getRegexOfGroup = function(group, index){
@@ -85,38 +86,46 @@ OCR.prototype.getRegex = function(macroPattern) {
 
 };
 
+/**
+ * Prototype OCR-engine
+ */
 OCR.prototype.process = function (client, text, url){
 
+    // store ocrresult (including cloud url, ocr optins, etc.)
+    this.ocrresult = new OCRResult({text: text}, this.receipt, this.quality, this.options.psm, this.options.l, url)
+    this.ocrresult.save(client);
+
+    // constructs regex pattern for receipt item
     this.regexPattern = this.getRegex(this.regexItemPatternMacro);
     var regex = new RegExp(this.regexPattern,"g");
-
-
 
     var product;
     var receiptItem;
     var match;
+    //for each match (receipt item)
     while (match = regex.exec(text)) {
-        /*var i;
-        for (i = 0; i <= match.length - 1; i += 1) { 
-            console.log(`Match ${i}: ${match[i]}`);
-        }*/
+
         console.log(`receiptItem.save: ${match[0]}`);
 
+        // create master data product instance
         product = new Product(match[this.regexGroupIndex.name]);
+        //find similar or create new product
         product.save(client);
         
+        // create receipt item instance (replace seperator "," with "." for prices)
+        // TODO: only product, price and quantity are supported. Additional attributes like EAN, etc. to be implemented.
         receiptItem = new ReceiptItem(this.receipt, product.getId(), match[this.regexGroupIndex.price].replace(/,/g, '.'), match[this.regexGroupIndex.quantity])
         receiptItem.save(client);
 
+        // save created instances for result array
         this.products.push(product);
         this.receiptItems.push(receiptItem);
     }
 
-    this.ocrresult = new OCRResult({text: text}, this.receipt, this.quality, this.options.psm, this.options.l, url)
-    this.ocrresult.save(client);
-
+    // log object completely
     console.log(`After ocr.process(${util.inspect(this, false, null)})`);
 
+    // construct and return response
     var response = {ocrresult: this.ocrresult,
         receipt: this.receipt,
         products: this.products,

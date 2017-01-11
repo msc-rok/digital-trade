@@ -18,8 +18,6 @@ app.use(function(req, res, next){
 
 require('./routes')(app);
 
-//require('./cloudinary_index.js')(app);
-
 var runningPortNumber = process.env.PORT || 3000;
 
 var server = app.listen(runningPortNumber, function () {
