@@ -60,7 +60,7 @@ module.exports = function (app) {
 
 /**
  * Temporally changes config vars.
- * WARNING: the variables refreshed on deploy/restart. Only changes in heroku itself are persistent!
+ * WARNING: the variables are reset on deployment/restart. Only changes in heroku itself are persistent!
  */
 var configuration = function(req, res) {
 
@@ -87,163 +87,9 @@ var configuration = function(req, res) {
         console.log(response);
     };
 
-/**
- * get specific ocrresult with all related records (receipt, receiptitems, products)
- */
-var ocrresults_deep = function (req, res) {
-    var client;
-    async(function (res) {
-        try {
-            client = await(pool.connect());
-            var dbOCRResults = [];
-            var dbReceipts = [];
-            var dbReceiptItems = [];
-            var dbProducts = [];
-
-            dbOCRResults = await(new OCRResult().get(client, req.params.ocrresultid));
-            if (dbOCRResults.length == 1) {
-
-                dbReceipts = await(new Receipt().get(client, dbOCRResults[0].receipt));
-                if (dbReceipts.length == 1) {
-
-                    dbReceiptItems = await(new ReceiptItem(dbOCRResults[0].receipt).get(client));
-                    if (dbReceiptItems.length > 0) {
-                        var addCond = '';
-                        if (dbReceiptItems.length > 0) {
-                            for (let i = 0, l = dbReceiptItems.length - 1; i <= l; i++) {
-                                addCond += `${dbReceiptItems[i].product}`
-                                if (i < l) { addCond += ',' }
-                            }
-                            addCond = `id IN (${addCond})`;
-                            dbProducts = await(new Product().get(client, null, addCond));
-                        }
-                    }
-                }
-            }
-
-            var response = {
-                ocrresults: dbOCRResults,
-                receipts: dbReceipts,
-                receiptitems: dbReceiptItems,
-                products: dbProducts
-            };
-            res.json(response);
-            console.log(response);
-            if (client !== undefined) {
-                client.release(true);
-            }
-        } catch (error) {
-            console.log(error);
-            res.status(500).send();
-            if (client !== undefined) {
-                client.release(true);
-            }
-        }
-    })(res);
-}
 
 /**
- * get all/specific product(s)
- */
-var products = function (req, res) {
-    var client;
-    async(function (res) {
-        try {
-            client = await(pool.connect());
-            var dbProducts = await(new Product().get(client, req.params.productid));
-            var response = { products: dbProducts };
-            res.json(response);
-            console.log(response);
-            if (client !== undefined) {
-                client.release(true);
-            }
-        } catch (error) {
-            console.log(error);
-            res.status(500).send();
-            if (client !== undefined) {
-                client.release(true);
-            }
-        }
-    })(res);
-}
-
-/**
- * get all/specific receipt(s)
- */
-var receipts = function (req, res) {
-    var client;
-    async(function (res) {
-        try {
-            client = await(pool.connect());
-            var dbReceipts = await(new Receipt().get(client, req.params.receiptid));
-            var response = { receipts: dbReceipts };
-            res.json(response);
-            console.log(response);
-            if (client !== undefined) {
-                client.release(true);
-            }
-        } catch (error) {
-            console.log(error);
-            res.status(500).send();
-            if (client !== undefined) {
-                client.release(true);
-            }
-        }
-    })(res);
-};
-
-/**
- * get all/specific receiptitem(s)
- */
-var receiptitems = function (req, res) {
-    var client;
-    async(function (res) {
-        try {
-            client = await(pool.connect());
-            var dbReceiptItems = await(new ReceiptItem(req.params.receiptid, req.params.productid, null, null).get(client, req.params.receiptitemid));
-            var response = { receiptitems: dbReceiptItems };
-            res.json(response);
-            console.log(response);
-            if (client !== undefined) {
-                client.release(true);
-            }
-        } catch (error) {
-            console.log(error);
-            res.status(500).send();
-            if (client !== undefined) {
-                client.release(true);
-            }
-        }
-    })(res);
-}
-
-/**
- * get all/specific ocrresult(s)
- */
-var ocrresults = function (req, res) {
-    var client;
-    async(function (res) {
-        try {
-            client = await(pool.connect());
-            var dbOCRResults = await(new OCRResult(null, req.params.receiptid).get(client, req.params.ocrresultid));
-            var response = { ocrresults: dbOCRResults };
-            res.json(response);
-            console.log(response);
-            if (client !== undefined) {
-                client.release(true);
-            }
-        } catch (error) {
-            console.log(error);
-            res.status(500).send();
-            if (client !== undefined) {
-                client.release(true);
-            }
-        }
-    })(res);
-}
-
-/**
- * Following steps done under this functions.
+ * OCR Processing Engine.
  *
  * 1. Uploads image under '.tmp' folder.
  * 2. Uploads image to cloud server (storage & transformation)
@@ -352,3 +198,163 @@ var ocrengine = function (req, res) {
 
     })
 };
+
+
+/**
+ * get all/specific ocrresult(s)
+ */
+var ocrresults = function (req, res) {
+    var client;
+    async(function (res) {
+        try {
+            client = await(pool.connect());
+            var dbOCRResults = await(new OCRResult(null, req.params.receiptid).get(client, req.params.ocrresultid));
+            var response = { ocrresults: dbOCRResults };
+            res.json(response);
+            console.log(response);
+            if (client !== undefined) {
+                client.release(true);
+            }
+        } catch (error) {
+            console.log(error);
+            res.status(500).send();
+            if (client !== undefined) {
+                client.release(true);
+            }
+        }
+    })(res);
+}
+
+/**
+ * get specific ocrresult with all related records (receipt, receiptitems, products)
+ */
+var ocrresults_deep = function (req, res) {
+    var client;
+    async(function (res) {
+        try {
+            client = await(pool.connect());
+            var dbOCRResults = [];
+            var dbReceipts = [];
+            var dbReceiptItems = [];
+            var dbProducts = [];
+
+            dbOCRResults = await(new OCRResult().get(client, req.params.ocrresultid));
+            if (dbOCRResults.length == 1) {
+
+                dbReceipts = await(new Receipt().get(client, dbOCRResults[0].receipt));
+                if (dbReceipts.length == 1) {
+
+                    dbReceiptItems = await(new ReceiptItem(dbOCRResults[0].receipt).get(client));
+                    if (dbReceiptItems.length > 0) {
+                        var addCond = '';
+                        if (dbReceiptItems.length > 0) {
+                            for (let i = 0, l = dbReceiptItems.length - 1; i <= l; i++) {
+                                addCond += `${dbReceiptItems[i].product}`
+                                if (i < l) { addCond += ',' }
+                            }
+                            addCond = `id IN (${addCond})`;
+                            dbProducts = await(new Product().get(client, null, addCond));
+                        }
+                    }
+                }
+            }
+
+            var response = {
+                ocrresults: dbOCRResults,
+                receipts: dbReceipts,
+                receiptitems: dbReceiptItems,
+                products: dbProducts
+            };
+            res.json(response);
+            console.log(response);
+            if (client !== undefined) {
+                client.release(true);
+            }
+        } catch (error) {
+            console.log(error);
+            res.status(500).send();
+            if (client !== undefined) {
+                client.release(true);
+            }
+        }
+    })(res);
+}
+
+
+/**
+ * get all/specific receipt(s)
+ */
+var receipts = function (req, res) {
+    var client;
+    async(function (res) {
+        try {
+            client = await(pool.connect());
+            var dbReceipts = await(new Receipt().get(client, req.params.receiptid));
+            var response = { receipts: dbReceipts };
+            res.json(response);
+            console.log(response);
+            if (client !== undefined) {
+                client.release(true);
+            }
+        } catch (error) {
+            console.log(error);
+            res.status(500).send();
+            if (client !== undefined) {
+                client.release(true);
+            }
+        }
+    })(res);
+};
+
+
+/**
+ * get all/specific receiptitem(s)
+ */
+var receiptitems = function (req, res) {
+    var client;
+    async(function (res) {
+        try {
+            client = await(pool.connect());
+            var dbReceiptItems = await(new ReceiptItem(req.params.receiptid, req.params.productid, null, null).get(client, req.params.receiptitemid));
+            var response = { receiptitems: dbReceiptItems };
+            res.json(response);
+            console.log(response);
+            if (client !== undefined) {
+                client.release(true);
+            }
+        } catch (error) {
+            console.log(error);
+            res.status(500).send();
+            if (client !== undefined) {
+                client.release(true);
+            }
+        }
+    })(res);
+}
+
+
+/**
+ * get all/specific product(s)
+ */
+var products = function (req, res) {
+    var client;
+    async(function (res) {
+        try {
+            client = await(pool.connect());
+            var dbProducts = await(new Product().get(client, req.params.productid));
+            var response = { products: dbProducts };
+            res.json(response);
+            console.log(response);
+            if (client !== undefined) {
+                client.release(true);
+            }
+        } catch (error) {
+            console.log(error);
+            res.status(500).send();
+            if (client !== undefined) {
+                client.release(true);
+            }
+        }
+    })(res);
+}
+

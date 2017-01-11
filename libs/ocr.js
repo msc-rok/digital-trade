@@ -104,6 +104,8 @@ OCR.prototype.process = function (client, text, url){
     var product;
     var receiptItem;
     var match;
+    var price;
+    var quantity;
     //for each match (receipt item)
     while (match = regex.exec(text)) {
 
@@ -114,9 +116,17 @@ OCR.prototype.process = function (client, text, url){
         //find similar or create new product
         product.save(client);
         
+        price = match[this.regexGroupIndex.price];
+        quantity = match[this.regexGroupIndex.quantity];
+
+        // sperator correction
+        if(price){
+            price = price.replace(/,/g, '.')}
+        }
+       
         // create receipt item instance (replace seperator "," with "." for prices)
         // TODO: only product, price and quantity are supported. Additional attributes like EAN, etc. to be implemented.
-        receiptItem = new ReceiptItem(this.receipt, product.getId(), match[this.regexGroupIndex.price].replace(/,/g, '.'), match[this.regexGroupIndex.quantity])
+        receiptItem = new ReceiptItem(this.receipt, product.getId(), price, quantity)
         receiptItem.save(client);
 
         // save created instances for result array
