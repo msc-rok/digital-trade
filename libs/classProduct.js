@@ -81,7 +81,7 @@ Product.prototype.add = function (client) {
 /**
  * Get specific/all object(s)
   */
-Product.prototype.get = function (client, id) {
+Product.prototype.get = function (client, id, addCond) {
     console.log("product.get(): ", JSON.stringify(this));
 
     var condition = `1=1`;

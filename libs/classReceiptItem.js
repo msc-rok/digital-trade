@@ -43,7 +43,7 @@ ReceiptItem.prototype.save = function (client) {
 /**
  * Get specific/all object(s)
   */
-ReceiptItem.prototype.get = function (client, id) {
+ReceiptItem.prototype.get = function (client, id, addCond) {
     console.log("ReceiptItem.get(): ", JSON.stringify(this));
 
     var condition = `1=1`;
