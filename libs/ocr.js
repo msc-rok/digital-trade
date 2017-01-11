@@ -20,7 +20,7 @@ function OCR(receipt) {
         psm:  config("OCR_OPTIONS_PSM") || 6
     };
 
-    this.regexItemPatternMacro = config("OCR_ITEM_PATTERN") || "$NAME$PRICE$QUANTITY"
+    this.regexItemPatternMacro = config("OCR_ITEM_PATTERN") || "NAME PRICE QUANTITY"
     this.regexGroupIndex = { name: null, price: null, quantity: null, ean: null };
 
     this.regexPattern = "";
@@ -35,7 +35,7 @@ function OCR(receipt) {
 const regexGroups = {
     name : '.+?',
     price: '\\d+([\\.\\,])\\d+',
-    quantity: '\\d',
+    quantity: '\\d+',
     ean: '\\d+'
     // (?P<name>.+?)\s(?<price>\d+\.\d+)\s(?<quantity>\d)
 
@@ -72,9 +72,9 @@ OCR.prototype.getRegexOfGroup = function(group, index){
 
 OCR.prototype.getRegex = function(macroPattern) {
     var regex = "";
-    var groups = macroPattern.split('$');
+    var groups = macroPattern.split(' ');
     var i;
-    for (i = 1; i <= groups.length - 1; i += 1) { 
+    for (i = 0; i <= groups.length - 1; i += 1) { 
         regex += this.getRegexOfGroup(groups[i], i);
         if (i < groups.length-1){
              regex += _regexWhitespaces;
