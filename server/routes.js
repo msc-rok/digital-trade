@@ -62,10 +62,10 @@ module.exports = function (app) {
         res.json({
                 key: req.params.key,
                 oldvalue: oldvalue,
-                newvalue: config(req.params.key)
+                newvalue: process.env[req.params.key]
             });
         
-        console.log(""  + config("OCR_ITEM_PATTERN"));
+        console.log(""  + process.env[req.params.key]);
     });
 };
 
