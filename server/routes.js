@@ -54,15 +54,15 @@ module.exports = function (app) {
     app.get("/api/products/:productid", products);
     app.get("/api/products/:productid/receiptitems", receiptitems);
 
-    app.get("/api/config/:key", config);
-    app.patch("/api/config/:key/:value", config);
+    app.get("/api/config/:key", configuration);
+    app.patch("/api/config/:key/:value", configuration);
 };
 
 /**
  * Temporally changes config vars.
  * WARNING: the variables refreshed on deploy/restart. Only changes in heroku itself are persistent!
  */
-var config = function(req, res) {
+var configuration = function(req, res) {
 
         var currentvalue = process.env[req.params.key];
 
