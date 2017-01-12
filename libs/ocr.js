@@ -122,16 +122,16 @@ OCR.prototype.process = function (client, text, url) {
         if (price) {
             price = price.replace(/,/g, '.')
         }
+
+        // create receipt item instance (replace seperator "," with "." for prices)
+        // TODO: only product, price and quantity are supported. Additional attributes like EAN, etc. to be implemented.
+        receiptItem = new ReceiptItem(this.receipt, product.getId(), price, quantity)
+        receiptItem.save(client);
+
+        // save created instances for result array
+        this.products.push(product);
+        this.receiptItems.push(receiptItem);
     }
-
-    // create receipt item instance (replace seperator "," with "." for prices)
-    // TODO: only product, price and quantity are supported. Additional attributes like EAN, etc. to be implemented.
-    receiptItem = new ReceiptItem(this.receipt, product.getId(), price, quantity)
-    receiptItem.save(client);
-
-    // save created instances for result array
-    this.products.push(product);
-    this.receiptItems.push(receiptItem);
 
     // log object completely
     console.log(`After ocr.process(${util.inspect(this, false, null)})`);
