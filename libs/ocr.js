@@ -20,7 +20,7 @@ const _regexWhitespaces = '[ \\t]+'; //whitespace or tab (no newline)
 function OCR(receipt) {
     this.options = {
         l: process.env.OCR_OPTIONS_LANG || 'deu',
-        psm:  process.env.OCR_OPTIONS_PSM || 6
+        psm: process.env.OCR_OPTIONS_PSM || 6
     };
 
     this.regexItemPatternMacro = process.env.OCR_ITEM_PATTERN || "NAME PRICE QUANTITY"
@@ -36,16 +36,15 @@ function OCR(receipt) {
 };
 
 const regexGroups = {
-    name : '.+?',
+    name: '.+?',
     price: '\\d+([\\.\\,])\\d+',
     quantity: '\\d+',
     ean: '\\d+'
 };
 
-OCR.prototype.getRegexOfGroup = function(group, index){
+OCR.prototype.getRegexOfGroup = function (group, index) {
     var groupRegex;
-    switch (group.toLowerCase())
-    {
+    switch (group.toLowerCase()) {
         case "name":
             groupRegex = regexGroups.name;
             this.regexGroupIndex.name = index;
@@ -64,7 +63,7 @@ OCR.prototype.getRegexOfGroup = function(group, index){
             break;
         default:
             groupRegex = group;
-        break;
+            break;
     }
     // (.+?)\h+(\d+([\.\,])\d+)\h+([AB]{1})
     // (.+?)[ \t]+(\d+([\.\,])\d+)[ \t]+([12]{1})
@@ -73,14 +72,14 @@ OCR.prototype.getRegexOfGroup = function(group, index){
     return `(${groupRegex})`;
 };
 
-OCR.prototype.getRegex = function(macroPattern) {
+OCR.prototype.getRegex = function (macroPattern) {
     var regex = "";
     var groups = macroPattern.split(/[ ]+/);
     var i;
     for (i = 0; i <= groups.length - 1; i += 1) {
         regex += this.getRegexOfGroup(groups[i], i + 1);
-        if (i < groups.length-1){
-             regex += _regexWhitespaces;
+        if (i < groups.length - 1) {
+            regex += _regexWhitespaces;
         }
     }
     console.log(`regex=${regex}`);
@@ -91,15 +90,15 @@ OCR.prototype.getRegex = function(macroPattern) {
 /**
  * Prototype OCR-engine
  */
-OCR.prototype.process = function (client, text, url){
+OCR.prototype.process = function (client, text, url) {
 
     // store ocrresult (including cloud url, ocr optins, etc.)
-    this.ocrresult = new OCRResult({text: text}, this.receipt, this.quality, this.options.psm, this.options.l, url)
+    this.ocrresult = new OCRResult({ text: text }, this.receipt, this.quality, this.options.psm, this.options.l, url)
     this.ocrresult.save(client);
 
     // constructs regex pattern for receipt item
     this.regexPattern = this.getRegex(this.regexItemPatternMacro);
-    var regex = new RegExp(this.regexPattern,"g");
+    var regex = new RegExp(this.regexPattern, "g");
 
     var product;
     var receiptItem;
@@ -115,36 +114,37 @@ OCR.prototype.process = function (client, text, url){
         product = new Product(match[this.regexGroupIndex.name]);
         //find similar or create new product
         product.save(client);
-        
+
         price = match[this.regexGroupIndex.price];
         quantity = match[this.regexGroupIndex.quantity];
 
         // sperator correction
-        if(price){
-            price = price.replace(/,/g, '.')}
+        if (price) {
+            price = price.replace(/,/g, '.')
         }
-       
-        // create receipt item instance (replace seperator "," with "." for prices)
-        // TODO: only product, price and quantity are supported. Additional attributes like EAN, etc. to be implemented.
-        receiptItem = new ReceiptItem(this.receipt, product.getId(), price, quantity)
-        receiptItem.save(client);
-
-        // save created instances for result array
-        this.products.push(product);
-        this.receiptItems.push(receiptItem);
     }
+
+    // create receipt item instance (replace seperator "," with "." for prices)
+    // TODO: only product, price and quantity are supported. Additional attributes like EAN, etc. to be implemented.
+    receiptItem = new ReceiptItem(this.receipt, product.getId(), price, quantity)
+    receiptItem.save(client);
+
+    // save created instances for result array
+    this.products.push(product);
+    this.receiptItems.push(receiptItem);
 
     // log object completely
     console.log(`After ocr.process(${util.inspect(this, false, null)})`);
 
     // construct and return response
-    var response = {ocrresult: this.ocrresult,
+    var response = {
+        ocrresult: this.ocrresult,
         receipt: this.receipt,
         products: this.products,
         receiptitems: this.receiptItems
     }
 
     return response;
-}
+};
 
 module.exports = OCR;
