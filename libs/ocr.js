@@ -100,6 +100,9 @@ OCR.prototype.process = function (client, text, url) {
     this.regexPattern = this.getRegex(this.regexItemPatternMacro);
     var regex = new RegExp(this.regexPattern, "g");
 
+    // log object completely
+    console.log(`Before ocr.process(${util.inspect(this, false, null)})`);
+
     var product;
     var receiptItem;
     var match;
@@ -110,7 +113,7 @@ OCR.prototype.process = function (client, text, url) {
     //for each match (receipt item)
     while (match = regex.exec(text)) {
 
-        console.log(`receiptItem.save: ${match[0]}`);
+        console.log(`match: ${match}`);
 
         // create master data product instance
         name = match[this.regexGroupIndex.name];
