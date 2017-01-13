@@ -39,10 +39,10 @@ function OCR(receipt) {
 };
 
 const regexGroups = {
-    name: '.+?',
-    price: '\\d+([\\.\\,])\\d+',
-    quantity: '\\d+',
-    ean: '\\d+'
+    name: '(.+?)',
+    price: '(\\d{1,6}[\\.\\,]{1}\\d{2})',
+    quantity: '(\\d{1,2})',
+    ean: '(\\d+)'
 };
 
 OCR.prototype.getRegexOfGroup = function (group, index) {
@@ -60,19 +60,20 @@ OCR.prototype.getRegexOfGroup = function (group, index) {
             groupRegex = regexGroups.quantity;
             this.regexGroupIndex.quantity = index;
             break;
-        case "ean":
+        case "ean": // TODO: GTIN
             groupRegex = regexGroups.ean;
             this.regexGroupIndex.ean = index;
             break;
         default:
-            groupRegex = group;
+            groupRegex = `(?:${group})`; // (?:...) = non-capturing group
             break;
     }
     // (.+?)\h+(\d+([\.\,])\d+)\h+([AB]{1})
     // (.+?)[ \t]+(\d+([\.\,])\d+)[ \t]+([12]{1})
+    // (.+?)[ \t]+(\d+(?:[\.\,])\d+)[ \t]+(\d+)
     // (?P<name>.+?)\s+(?P<price>\d+\.\d+)\s+(?P<quantity>\d)
     // (?P<name>.+?)\s+(?P<price>\d+\.\d+)\s(?<quantity>\d)
-    return `(${groupRegex})`;
+    return groupRegex;
 };
 
 OCR.prototype.getRegex = function (macroPattern) {
@@ -94,13 +95,12 @@ OCR.prototype.getRegex = function (macroPattern) {
  * Prototype OCR-engine
  */
 OCR.prototype.process = function (client, text, url) {
+    // log object completely
+    console.log(`Before ocr.process(${util.inspect(this, false, null)})`);
 
     // store ocrresult (including cloud url, ocr optins, etc.)
     this.ocrresult = new OCRResult({ text: text }, this.receipt, this.quality, this.options.psm, this.options.l, url)
     this.ocrresult.save(client);
-
-    // log object completely
-    console.log(`Before ocr.process(${util.inspect(this, false, null)})`);
 
     var product;
     var receiptItem;
