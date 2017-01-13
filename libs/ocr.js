@@ -26,7 +26,10 @@ function OCR(receipt) {
     this.regexItemPatternMacro = process.env.OCR_ITEM_PATTERN || "NAME PRICE QUANTITY"
     this.regexGroupIndex = { name: null, price: null, quantity: null, ean: null };
 
-    this.regexPattern = "";
+    // constructs regex pattern for receipt item
+    this.regexPattern = this.getRegex(this.regexItemPatternMacro);
+    this.regex = new RegExp(this.regexPattern, "g");
+
     this.quality = 1.0;
 
     this.receipt = receipt;
@@ -96,10 +99,6 @@ OCR.prototype.process = function (client, text, url) {
     this.ocrresult = new OCRResult({ text: text }, this.receipt, this.quality, this.options.psm, this.options.l, url)
     this.ocrresult.save(client);
 
-    // constructs regex pattern for receipt item
-    this.regexPattern = this.getRegex(this.regexItemPatternMacro);
-    var regex = new RegExp(this.regexPattern, "g");
-
     // log object completely
     console.log(`Before ocr.process(${util.inspect(this, false, null)})`);
 
@@ -111,7 +110,7 @@ OCR.prototype.process = function (client, text, url) {
     var price = '';
     var quantity = '';
     //for each match (receipt item)
-    while (match = regex.exec(text)) {
+    while (match = this.regex.exec(text)) {
 
         console.log(`match: ${match}`);
 
