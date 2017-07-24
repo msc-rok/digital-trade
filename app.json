@@ -1,0 +1,61 @@
+{
+  "name": "digital-trade",
+  "scripts": {
+  },
+  "env": {
+    "ADMINIUM_URL": {
+      "required": true
+    },
+    "CLOUDINARY_UPLOAD_PRESET": {
+      "required": true
+    },
+    "CLOUDINARY_UPLOAD_URL": {
+      "required": true
+    },
+    "CLOUDINARY_URL": {
+      "required": true
+    },
+    "DATABASE_SCHEMA": {
+      "required": true
+    },
+    "DATABASE_SIMILARITY_LIMIT": {
+      "required": true
+    },
+    "DBINSIGHTS_URL": {
+      "required": true
+    },
+    "OCR_ITEM_PATTERN": {
+      "required": true
+    },
+    "OCR_OPTIONS_LANG": {
+      "required": true
+    },
+    "OCR_OPTIONS_PSM": {
+      "required": true
+    },
+    "OCRESTFUL_API_SECRET": {
+      "required": true
+    },
+    "OCRESTFUL_BASE_URL": {
+      "required": true
+    }
+  },
+  "formation": {
+  },
+  "addons": [
+    "adminium",
+    "cloudinary",
+    "dbinsights",
+    "ocrestful",
+    "heroku-postgresql",
+    "trevor"
+  ],
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    },
+    {
+      "url": "https://github.com/matteotiziano/heroku-buildpack-tesseract"
+    }
+  ]
+}
