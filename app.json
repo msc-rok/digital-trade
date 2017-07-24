@@ -55,7 +55,7 @@
       "url": "heroku/nodejs"
     },
     {
-      "url": "https://github.com/oswellchan/heroku-buildpack-tesseract"
+      "url": "https://github.com/msc-rok/heroku-buildpack-tesseract"
     }
   ]
 }
